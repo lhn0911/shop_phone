@@ -5,7 +5,7 @@ import ra.edu.business.dao.account.AccountDaoImp;
 import ra.edu.business.model.account.Account;
 
 public class AccountServiceImp implements AccountService{
-    private AccountDao accountDao = new AccountDaoImp();
+    private final AccountDao accountDao = new AccountDaoImp();
 
     @Override
     public Account login(String username, String password) {

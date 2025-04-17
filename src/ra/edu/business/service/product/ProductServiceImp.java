@@ -8,11 +8,13 @@ import java.util.List;
 
 public class ProductServiceImp implements ProductService {
     private final ProductDao productDao;
+
     public ProductServiceImp() {
         this.productDao = new ProductDaoImp();
     }
+
     @Override
-    public List<Product> findAll(){
+    public List<Product> findAll() {
         return productDao.findAll();
     }
 
@@ -28,8 +30,38 @@ public class ProductServiceImp implements ProductService {
 
     @Override
     public boolean delete(Product product) {
-        return false;
+        return productDao.delete(product);
     }
 
+
+    @Override
+    public Product findById(int id) {
+        return productDao.findById(id);
+    }
+
+    @Override
+    public List<Product> findByName(String name) {
+        return productDao.findByName(name);
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        return !productDao.findByName(name.trim()).isEmpty();
+    }
+
+    @Override
+    public List<Product> searchByBrand(String brand) {
+        return productDao.searchByBrand(brand);
+    }
+
+    @Override
+    public List<Product> searchByPrice(double minPrice, double maxPrice) {
+        return productDao.searchByPrice(minPrice, maxPrice);
+    }
+
+    @Override
+    public List<Product> searchByStock(int minStock, int maxStock) {
+        return productDao.searchByStock(minStock, maxStock);
+    }
 
 }

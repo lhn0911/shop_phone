@@ -37,6 +37,10 @@ public class ProductValidator {
         System.out.println(message);
         while (true) {
             String input = scanner.nextLine().trim();
+            if (input.isEmpty()) {
+                System.err.println("Giá không được để trống, Nhập lại: ");
+                continue;
+            }
             if (!Validator.isValidDataType(input, Double.class)) {
                 System.err.println("Giá phải là số thực, Nhập lại: ");
                 continue;
@@ -53,6 +57,10 @@ public class ProductValidator {
         System.out.println(message);
         while (true) {
             String input = scanner.nextLine().trim();
+            if (input.isEmpty()) {
+                System.err.println("Tồn kho không được để trống, Nhập lại: ");
+                continue;
+            }
             if (!Validator.isValidDataType(input, Integer.class)) {
                 System.err.println("Tồn kho là số nguyên, Nhập lại: ");
                 continue;
