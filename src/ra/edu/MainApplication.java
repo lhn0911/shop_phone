@@ -1,6 +1,7 @@
 package ra.edu;
 
 import ra.edu.business.model.account.Account;
+import ra.edu.presentation.CustomerUI;
 import ra.edu.presentation.LoginUI;
 import ra.edu.presentation.ProductUI;
 import ra.edu.validate.ChoiceValidator;
@@ -13,6 +14,7 @@ public class MainApplication {
     public static void main(String[] args) {
         LoginUI loginUI = new LoginUI();
         ProductUI productUI = new ProductUI();
+        CustomerUI customerUI = new CustomerUI();
         Account currentAccount = null;
         do {
             if (currentAccount == null) {
@@ -46,6 +48,7 @@ public class MainApplication {
                         productUI.productMenu();
                         break;
                     case 2:
+                        customerUI.CustomerMenu();
                         break;
                     case 3:
                         break;

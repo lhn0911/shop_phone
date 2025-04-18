@@ -11,15 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductDaoImp implements ProductDao{
-    private ResultSet executeQuery(String procedure) {
-        try (Connection conn = ConnectionDB.openConnection();
-             CallableStatement callSt = conn.prepareCall(procedure)) {
-            return callSt.executeQuery();
-        } catch (SQLException e) {
-            e.fillInStackTrace();
-        }
-        return null;
-    }
     @Override
     public Product findById(int id) {
         Product product = null;

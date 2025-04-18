@@ -13,6 +13,7 @@ import java.util.Scanner;
 public class ProductUI {
     private final Scanner scanner = new Scanner(System.in);
     private final ProductService productService = new ProductServiceImp();
+
     public void productMenu() {
         do {
             System.out.println("=======QUẢN LÝ SẢN PHẨM =====");
@@ -20,10 +21,11 @@ public class ProductUI {
             System.out.println("2. Thêm sản phẩm mới");
             System.out.println("3. Cập nhật thông tin sản phẩm");
             System.out.println("4. Xóa sản phẩm theo ID");
-            System.out.println("5. Tìm kiếm theo brand");
-            System.out.println("6. Tìm kiếm theo khoảng giá");
-            System.out.println("7. Tìm kiếm theo tồn kho");
-            System.out.println("8. Quay lại menu chính");
+            System.out.println("5. Tìm kiếm theo tên");
+            System.out.println("6. Tìm kiếm theo brand");
+            System.out.println("7. Tìm kiếm theo khoảng giá");
+            System.out.println("8. Tìm kiếm theo tồn kho");
+            System.out.println("9. Quay lại menu chính");
             System.out.println("=============================");
             int choice = ChoiceValidator.validateChoice(scanner);
             switch (choice) {
@@ -40,21 +42,35 @@ public class ProductUI {
                     deleteProduct(scanner);
                     break;
                 case 5:
-                    searchByBrand(scanner);
+                    searByName(scanner);
                     break;
                 case 6:
-                    searchByPrice(scanner);
+                    searchByBrand(scanner);
                     break;
                 case 7:
-                    searchByStock(scanner);
+                    searchByPrice(scanner);
                     break;
                 case 8:
+                    searchByStock(scanner);
+                    break;
+                case 9:
                     return;
                 default:
                     System.out.println("Lựa chọn không hợp lệ");
 
             }
         } while (true);
+    }
+
+    private void searByName(Scanner scanner) {
+        String name =  ProductValidator.validateProductName(scanner, "Nhập tên sản phẩm muốn tìm");
+        List<Product> resultList = productService.findByName(name);
+        if (resultList.isEmpty()) {
+            System.out.println("Không tìm thấy sản phẩm nào thuộc tên \"" + name + "\".");
+        }else{
+            System.out.println("Sản phẩm tên \"" + name + "\" là :");
+            printProductList(resultList);
+        }
     }
 
     public void searchByStock(Scanner scanner) {
@@ -102,16 +118,29 @@ public class ProductUI {
     private void deleteProduct(Scanner scanner) {
         int id = ChoiceValidator.validateInput(scanner, "Nhập id sản phẩm muốn xóa");
         Product product = productService.findById(id);
-        if(product != null) {
-            if(productService.delete(product)) {
-                System.out.println("Xoá sản phẩm thành công");
-            }else{
-                System.out.println("Xoá sản phẩm thất bại");
+
+        if (product != null) {
+            System.out.println("Bạn có muốn xóa sản phẩm này không? (y: có, n: không)");
+            String confirm = scanner.nextLine().trim().toLowerCase();
+
+            if (confirm.equals("y")) {
+                if (productService.delete(product)) {
+                    System.out.println("Xoá sản phẩm thành công");
+                    displayListProduct();
+                } else {
+                    System.out.println("Xoá sản phẩm thất bại");
+                }
+            } else if (confirm.equals("n")) {
+                System.out.println("Hủy thao tác xóa.");
+                displayListProduct();
+            } else {
+                System.out.println("Lựa chọn không hợp lệ. Hủy thao tác.");
             }
-        }else{
-            System.out.println("Không tìm thấy sản phẩm");
+        } else {
+            System.out.println("Không tìm thấy sản phẩm với ID đã nhập.");
         }
     }
+
 
     private void updateProduct(Scanner scanner) {
         int id = ChoiceValidator.validateInput(scanner, "Nhập id cần sửa");
@@ -126,10 +155,10 @@ public class ProductUI {
 
         do {
             System.out.println("===== CẬP NHẬT SẢN PHẨM =====");
-            System.out.println("1. Tên sản phẩm (hiện tại: "+oldProduct.getProduct_name() +")");
-            System.out.println("2. Nhãn hàng (hiện tại: "+oldProduct.getProduct_brand() +")");
-            System.out.println("3. Giá (hiện tại: "+oldProduct.getProduct_price()+")");
-            System.out.println("4. Tồn kho (hiện tại: "+oldProduct.getProduct_stock()+")");
+            System.out.println("1. Tên sản phẩm (hiện tại: " + oldProduct.getProduct_name() + ")");
+            System.out.println("2. Nhãn hàng (hiện tại: " + oldProduct.getProduct_brand() + ")");
+            System.out.println("3. Giá (hiện tại: " + oldProduct.getProduct_price() + ")");
+            System.out.println("4. Tồn kho (hiện tại: " + oldProduct.getProduct_stock() + ")");
             System.out.println("5. Lưu và quay lại");
             System.out.println("=================================");
             int choice = ChoiceValidator.validateChoice(scanner);
@@ -165,6 +194,7 @@ public class ProductUI {
                     if (isUpdated) {
                         if (productService.update(oldProduct)) {
                             System.out.println("Cập nhật sản phẩm thành công!");
+                            displayListProduct();
                         } else {
                             System.err.println("Cập nhật sản phẩm thất bại!");
                         }
@@ -210,12 +240,13 @@ public class ProductUI {
                 System.out.println("Thêm sản phẩm thất bại!");
             }
         }
+        displayListProduct();
     }
 
 
     public void displayListProduct() {
         System.out.println("====== DANH SÁCH SẢN PHẨM ======");
-        var products = productService.findAll();
+        List<Product> products = productService.findAll();
         printProductList(products);
         System.out.println("================================");
     }
@@ -227,7 +258,7 @@ public class ProductUI {
             System.out.printf("%-5s %-25s %-15s %-12s %-10s\n",
                     "ID", "Tên sản phẩm", "Nhãn hiệu", "Giá bán", "Tồn kho");
             for (Product p : products) {
-                System.out.printf("%-5d %-25s %-15s %-12.2f %-10d\n",
+                System.out.printf("%-5d %-25s %-15s %-12.5f %-10d\n",
                         p.getProduct_id(), p.getProduct_name(), p.getProduct_brand(),
                         p.getProduct_price(), p.getProduct_stock());
             }
