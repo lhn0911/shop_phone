@@ -27,7 +27,7 @@ public class AccountDaoImp implements AccountDao{
                 account.setUsername(username);
                 account.setPassword(password);
             } else {
-                System.out.println("Tên đăng nhập hoặc mật khẩu không đúng.Đăng nhập lại: ");
+                System.out.println("Tên đăng nhập hoặc mật khẩu không đúng.Đăng nhập lại! ");
             }
         }catch(SQLException e){
             System.err.println("Lỗi khi đăng nhập: " + e.getMessage());

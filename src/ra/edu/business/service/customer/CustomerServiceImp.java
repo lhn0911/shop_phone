@@ -20,8 +20,19 @@ public class CustomerServiceImp implements CustomerService{
 
     @Override
     public List<Customer> findByName(String customerName) {
-        return List.of();
+        return customerDao.findByName(customerName);
     }
+
+    @Override
+    public List<Customer> findByPhone(String customerphone) {
+        return customerDao.findByPhone(customerphone);
+    }
+
+    @Override
+    public List<Customer> findByEmail(String customeremail) {
+        return customerDao.findByEmail(customeremail);
+    }
+
 
     @Override
     public List<Customer> findAll() {
@@ -30,20 +41,27 @@ public class CustomerServiceImp implements CustomerService{
 
     @Override
     public boolean save(Customer customer) {
-        return false;
+        return customerDao.save(customer);
     }
 
     @Override
     public boolean update(Customer customer) {
-        return false;
+        return customerDao.update(customer);
     }
 
     @Override
     public boolean delete(Customer customer) {
-        return false;
+        return customerDao.delete(customer);
     }
     @Override
-    public boolean existsByName(String name) {
-        return !customerDao.findByName(name.trim()).isEmpty();
+    public boolean existsByPhone(String phone) {
+        return !customerDao.findByPhone(phone.trim()).isEmpty();
     }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return !customerDao.findByEmail(email.trim()).isEmpty();
+    }
+
+
 }

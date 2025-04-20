@@ -8,5 +8,7 @@ import java.util.List;
 public interface CustomerDao extends AppDao<Customer> {
     Customer findById(int id);
     List<Customer> findByName(String name);
+    List<Customer> findByEmail(String email);
+    List<Customer> findByPhone(String phone);
 
 }

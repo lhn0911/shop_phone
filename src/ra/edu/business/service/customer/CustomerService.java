@@ -8,5 +8,9 @@ import java.util.List;
 public interface CustomerService extends AppService<Customer> {
     Customer findById(int id);
     List<Customer> findByName(String customerName);
-    boolean existsByName(String name);
+    List<Customer> findByPhone(String customerphone);
+    List<Customer> findByEmail(String customeremail);
+    boolean existsByPhone(String phone);
+    boolean existsByEmail(String email);
+
 }

@@ -5,8 +5,8 @@ import ra.edu.business.service.product.ProductService;
 import ra.edu.business.service.product.ProductServiceImp;
 import ra.edu.validate.ChoiceValidator;
 import ra.edu.validate.ProductValidator;
-import ra.edu.validate.Validator;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Scanner;
 
@@ -62,7 +62,7 @@ public class ProductUI {
         } while (true);
     }
 
-    private void searByName(Scanner scanner) {
+    public void searByName(Scanner scanner) {
         String name =  ProductValidator.validateProductName(scanner, "Nhập tên sản phẩm muốn tìm");
         List<Product> resultList = productService.findByName(name);
         if (resultList.isEmpty()) {
@@ -115,7 +115,7 @@ public class ProductUI {
         }
     }
 
-    private void deleteProduct(Scanner scanner) {
+    public void deleteProduct(Scanner scanner) {
         int id = ChoiceValidator.validateInput(scanner, "Nhập id sản phẩm muốn xóa");
         Product product = productService.findById(id);
 
@@ -142,7 +142,7 @@ public class ProductUI {
     }
 
 
-    private void updateProduct(Scanner scanner) {
+    public void updateProduct(Scanner scanner) {
         int id = ChoiceValidator.validateInput(scanner, "Nhập id cần sửa");
 
         Product oldProduct = productService.findById(id);
@@ -209,7 +209,7 @@ public class ProductUI {
     }
 
 
-    private void addProduct(Scanner scanner) {
+    public void addProduct(Scanner scanner) {
         int input = ChoiceValidator.validateInput(scanner, "Nhập vào số lượng cần thêm");
         for (int i = 0; i < input; i++) {
             System.out.println("====== Thêm sản phẩm ======");
@@ -251,18 +251,26 @@ public class ProductUI {
         System.out.println("================================");
     }
 
-    private void printProductList(List<Product> products) {
+    public void printProductList(List<Product> products) {
         if (products.isEmpty()) {
             System.out.println("Không có sản phẩm nào để hiển thị.");
         } else {
             System.out.printf("%-5s %-25s %-15s %-12s %-10s\n",
                     "ID", "Tên sản phẩm", "Nhãn hiệu", "Giá bán", "Tồn kho");
             for (Product p : products) {
-                System.out.printf("%-5d %-25s %-15s %-12.5f %-10d\n",
+                System.out.printf("%-5d %-25s %-15s %-15s %-10d\n",
                         p.getProduct_id(), p.getProduct_name(), p.getProduct_brand(),
-                        p.getProduct_price(), p.getProduct_stock());
+                        formatPrice(p.getProduct_price()), p.getProduct_stock());
             }
         }
     }
+    public String formatPrice(double price) {
+        if (price == (long) price) {
+            return String.format("%,d", (long) price);
+        } else {
+            return new DecimalFormat("#,###.########").format(price);
+        }
+    }
+
 
 }
