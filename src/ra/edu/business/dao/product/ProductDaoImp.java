@@ -167,8 +167,10 @@ public class ProductDaoImp implements ProductDao {
                 p.setProduct_stock(rs.getInt("product_stock"));
                 list.add(p);
             }
-        } catch (SQLException | RuntimeException e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            e.fillInStackTrace();
+        } catch (Exception e) {
+            e.fillInStackTrace();
         } finally {
             ConnectionDB.closeConnection(conn, callSt);
         }

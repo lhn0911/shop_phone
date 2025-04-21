@@ -5,7 +5,6 @@ import ra.edu.business.service.customer.CustomerService;
 import ra.edu.business.service.customer.CustomerServiceImp;
 import ra.edu.validate.ChoiceValidator;
 import ra.edu.validate.CustomerValidator;
-import ra.edu.validate.ProductValidator;
 
 import java.util.List;
 import java.util.Scanner;
@@ -224,4 +223,8 @@ public class CustomerUI {
             }
         }
     }
+//    public void printSize(){
+//        int page =1;
+//        int
+//    }
 }
