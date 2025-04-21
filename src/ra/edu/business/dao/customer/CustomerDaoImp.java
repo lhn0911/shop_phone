@@ -21,7 +21,7 @@ public class CustomerDaoImp implements CustomerDao{
             callSt =  conn.prepareCall("{call get_customer_byId(?)}");
             callSt.setInt(1, id);
             ResultSet rs = callSt.executeQuery();
-            if(rs.next()){
+            while (rs.next()){
                 customer = new Customer();
                 customer.setCustomer_id(rs.getInt("customer_id"));
                 customer.setCustomer_name(rs.getString("customer_name"));

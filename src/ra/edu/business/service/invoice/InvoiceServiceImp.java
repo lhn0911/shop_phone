@@ -18,21 +18,26 @@ public class InvoiceServiceImp implements InvoiceService{
 
     @Override
     public boolean save(Invoice invoice) {
-        return false;
+        return invoiceDao.save(invoice);
     }
 
     @Override
     public boolean update(Invoice invoice) {
-        return false;
+        return invoiceDao.update(invoice);
     }
 
     @Override
     public boolean delete(Invoice invoice) {
-        return false;
+        return invoiceDao.delete(invoice);
     }
 
     @Override
     public Invoice findById(int id) {
         return invoiceDao.findById(id);
+    }
+
+    @Override
+    public boolean updateTotalAmount(int invoiceId) {
+        return false;
     }
 }

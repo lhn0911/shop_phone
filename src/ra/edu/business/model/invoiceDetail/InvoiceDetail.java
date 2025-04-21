@@ -10,13 +10,13 @@ public class InvoiceDetail {
     public InvoiceDetail() {
     }
 
-    public InvoiceDetail(int invoicedt_id, int invoice_id, int product_id, int quantity, double unit_price) {
-        this.invoicedt_id = invoicedt_id;
+    public InvoiceDetail(int invoice_id, int product_id, int quantity, double unit_price) {
         this.invoice_id = invoice_id;
         this.product_id = product_id;
         this.quantity = quantity;
         this.unit_price = unit_price;
     }
+
 
     public int getInvoicedt_id() {
         return invoicedt_id;

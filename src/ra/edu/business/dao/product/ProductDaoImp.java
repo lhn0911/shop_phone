@@ -21,7 +21,7 @@ public class ProductDaoImp implements ProductDao {
             callSt = conn.prepareCall("{call get_product_byId(?)}");
             callSt.setInt(1, id);
             ResultSet rs = callSt.executeQuery();
-            if (rs.next()) {
+            while(rs.next()) {
                 product = new Product();
                 product.setProduct_id(rs.getInt("product_id"));
                 product.setProduct_name(rs.getString("product_name"));

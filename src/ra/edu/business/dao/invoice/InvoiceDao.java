@@ -12,4 +12,6 @@ public interface InvoiceDao extends AppDao<Invoice> {
     List<Invoice> findByMonth(int month, int year);
     List<Invoice> findByYear(int year);
     Invoice findById(int id);
+    boolean updateTotalAmount(int invoiceId);
+
 }

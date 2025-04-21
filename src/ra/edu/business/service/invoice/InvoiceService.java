@@ -5,4 +5,5 @@ import ra.edu.business.service.AppService;
 
 public interface InvoiceService extends AppService<Invoice> {
     Invoice findById(int id);
+    boolean updateTotalAmount(int invoiceId);
 }

@@ -20,17 +20,17 @@ public class InvoicedtServiceImp implements InvoicedtService{
 
     @Override
     public boolean save(InvoiceDetail invoiceDetail) {
-        return false;
+        return invoicedtDao.save(invoiceDetail);
     }
 
     @Override
     public boolean update(InvoiceDetail invoiceDetail) {
-        return false;
+        return invoicedtDao.update(invoiceDetail);
     }
 
     @Override
     public boolean delete(InvoiceDetail invoiceDetail) {
-        return false;
+        return invoicedtDao.delete(invoiceDetail);
     }
 
     @Override

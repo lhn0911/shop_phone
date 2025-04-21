@@ -37,11 +37,29 @@ public class InvoicedtDaoImp implements InvoicedtDao {
         }finally {
             ConnectionDB.closeConnection(conn, callSt);
         }
-        return List.of();
+        return list;
     }
 
     @Override
     public boolean save(InvoiceDetail invoiceDetail) {
+        Connection conn = null;
+        CallableStatement callSt = null;
+        try{
+            conn = ConnectionDB.openConnection();
+            callSt = conn.prepareCall("{call insert_invoice_detail(?, ?, ?, ?)}");
+            callSt.setInt(1,invoiceDetail.getInvoice_id());
+            callSt.setInt(2,invoiceDetail.getProduct_id());
+            callSt.setInt(3,invoiceDetail.getQuantity());
+            callSt.setDouble(4,invoiceDetail.getUnit_price());
+            callSt.executeUpdate();
+            return true;
+        }catch(SQLException e){
+            e.fillInStackTrace();
+        }catch(Exception e){
+            e.fillInStackTrace();
+        }finally {
+            ConnectionDB.closeConnection(conn, callSt);
+        }
         return false;
     }
 
@@ -68,7 +86,7 @@ public class InvoicedtDaoImp implements InvoicedtDao {
             ResultSet rs = callSt.executeQuery();
             while (rs.next()) {
                 InvoiceDetail invoicedt = new InvoiceDetail();
-                invoicedt.setInvoicedt_id(rs.getInt("id"));
+                invoicedt.setInvoicedt_id(rs.getInt("invoicedt_id"));
                 invoicedt.setInvoice_id(rs.getInt("invoice_id"));
                 invoicedt.setProduct_id(rs.getInt("product_id"));
                 invoicedt.setQuantity(rs.getInt("quantity"));
