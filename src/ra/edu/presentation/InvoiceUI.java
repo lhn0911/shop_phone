@@ -52,7 +52,7 @@ public class InvoiceUI {
         do {
             System.out.println("=======Tìm kiếm đơn hàng=======");
             System.out.println("1. Tìm kiếm theo tên khách hàng");
-            System.out.println("2. Tìm kiếm theo ngày (yyyy-MM-dd)");
+            System.out.println("2. Tìm kiếm theo ngày (dd)");
             System.out.println("3. Tìm kiếm theo tháng (MM)");
             System.out.println("4. Tìm kiếm theo năm (yyyy)");
             System.out.println("5. Quay lại menu chính");
@@ -66,19 +66,19 @@ public class InvoiceUI {
                     result = invoiceService.findByCustomerName(name);
                     break;
                 case 2:
-                        int date = ChoiceValidator.validateInput(scanner, "Nhập ngày");
-                        result = invoiceService.findByDate(date);
+                    int date = ChoiceValidator.validateInput(scanner, "Nhập ngày");
+                    result = invoiceService.findByDate(date);
                     break;
 
                 case 3:
 
-                        int month = ChoiceValidator.validateInput(scanner, "Nhập tháng");
-                        result = invoiceService.findByMonth(month);
+                    int month = ChoiceValidator.validateInput(scanner, "Nhập tháng");
+                    result = invoiceService.findByMonth(month);
                     break;
 
                 case 4:
-                        int year = ChoiceValidator.validateInput(scanner, "Nhập năm");
-                        result = invoiceService.findByYear(year);
+                    int year = ChoiceValidator.validateInput(scanner, "Nhập năm");
+                    result = invoiceService.findByYear(year);
                     break;
 
                 case 5:
