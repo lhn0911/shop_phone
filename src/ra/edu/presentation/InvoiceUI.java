@@ -7,9 +7,12 @@ import ra.edu.business.service.customer.CustomerServiceImp;
 import ra.edu.business.service.invoice.InvoiceService;
 import ra.edu.business.service.invoice.InvoiceServiceImp;
 import ra.edu.validate.ChoiceValidator;
+import ra.edu.validate.CustomerValidator;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -28,19 +31,79 @@ public class InvoiceUI {
             System.out.println("===============================");
             int choice = ChoiceValidator.validateChoice(scanner);
             switch (choice) {
-                case 1 -> displayListInvoice();
-                case 2 -> addNewInvoice();
-                case 3 -> {
-                    // TODO: implement search invoice
-                    System.out.println("Chức năng đang được phát triển...");
-                }
-                case 4 -> {
+                case 1:
+                    displayListInvoice();
+                    break;
+                case 2:
+                    addNewInvoice();
+                    break;
+                case 3:
+                    searchInvoice();
+                    break;
+                case 4:
                     return;
-                }
-                default -> System.out.println("Lựa chọn không hợp lệ");
+                default:
+                    System.out.println("Lựa chọn không hợp lệ");
             }
         } while (true);
     }
+
+    public void searchInvoice() {
+        do {
+            System.out.println("=======Tìm kiếm đơn hàng=======");
+            System.out.println("1. Tìm kiếm theo tên khách hàng");
+            System.out.println("2. Tìm kiếm theo ngày (yyyy-MM-dd)");
+            System.out.println("3. Tìm kiếm theo tháng (MM)");
+            System.out.println("4. Tìm kiếm theo năm (yyyy)");
+            System.out.println("5. Quay lại menu chính");
+            System.out.println("===============================");
+            int choice = ChoiceValidator.validateChoice(scanner);
+            List<Invoice> result = new ArrayList<Invoice>();
+
+            switch (choice) {
+                case 1:
+                    String name = CustomerValidator.validateCustomerName(scanner, "Nhập tên khách hàng");
+                    result = invoiceService.findByCustomerName(name);
+                    break;
+                case 2:
+                        int date = ChoiceValidator.validateInput(scanner, "Nhập ngày");
+                        result = invoiceService.findByDate(date);
+                    break;
+
+                case 3:
+
+                        int month = ChoiceValidator.validateInput(scanner, "Nhập tháng");
+                        result = invoiceService.findByMonth(month);
+                    break;
+
+                case 4:
+                        int year = ChoiceValidator.validateInput(scanner, "Nhập năm");
+                        result = invoiceService.findByYear(year);
+                    break;
+
+                case 5:
+                    return;
+                default:
+                    System.out.println("Lựa chọn không hợp lệ");
+                    continue;
+            }
+
+            if (result.isEmpty()) {
+                System.out.println("Không tìm thấy hóa đơn nào phù hợp.");
+            } else {
+                System.out.println("====== KẾT QUẢ TÌM KIẾM ======");
+                System.out.printf("%-5s %-15s %-20s %-15s%n", "ID", "Mã KH", "Ngày tạo", "Tổng tiền");
+                for (Invoice invoice : result) {
+                    System.out.printf("%-5d %-15s %-20s %-15.2f%n",
+                            invoice.getInvoice_id(),
+                            invoice.getCustomer_id(),
+                            invoice.getCreated_at(),
+                            invoice.getTotal_amount());
+                }
+            }
+        } while (true);
+    }
+
 
     private void addNewInvoice() {
         int input = ChoiceValidator.validateInput(scanner, "Nhập vào số lượng hóa đơn cần thêm: ");

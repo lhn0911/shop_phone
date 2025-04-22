@@ -82,7 +82,10 @@ public class InvoicedtUI {
             boolean saved = invoicedtService.save(detail);
             if (saved) {
                 System.out.println("Đã thêm sản phẩm vào hóa đơn!");
-                invoiceService.updateTotalAmount(invoiceId);
+                boolean updated = invoiceService.updateTotalAmount(invoiceId);
+                if (updated) {
+                    System.out.println("Tổng tiền hóa đơn sau khi cập nhật: " + invoiceService.findById(invoiceId).getTotal_amount());
+                }
             } else {
                 System.out.println("Thêm sản phẩm vào hóa đơn thất bại!");
             }

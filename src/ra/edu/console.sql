@@ -231,7 +231,7 @@ delimiter //
 -- ===
 CREATE TABLE invoice
 (
-    id           INT PRIMARY KEY AUTO_INCREMENT,
+    invoice_id           INT PRIMARY KEY AUTO_INCREMENT,
     customer_id  INT,
     created_at   DATETIME DEFAULT CURRENT_TIMESTAMP,
     total_amount DECIMAL(12, 2) NOT NULL,
@@ -240,18 +240,169 @@ CREATE TABLE invoice
         ON UPDATE CASCADE
 );
 -- ===
+delimiter //
+create procedure get_all_invoice()
+begin
+select * from invoice;
+end;
+delimiter //
+-- ===
+delimiter //
+create procedure find_invoice_by_customer_name(in c_customer_name varchar(100))
+begin
+select * from invoice i
+                  join customer c on i.customer_id = c.customer_id
+where c.customer_name like concat('%',c.customer_name,'%');
+end;
+delimiter //
+-- ===
+delimiter //
+create procedure find_invoice_by_date(in search_date int)
+begin
+select * from invoice where DATE(created_at) = search_date;
+end;
+delimiter //
+-- ===
+delimiter //
+create procedure find_invoice_by_month(in month int)
+begin
+select * from invoice
+where MONTH(created_at) = month;
+end ;
+delimiter //
+-- ===
+delimiter //
+create procedure find_invoice_by_year(in year int)
+begin
+select * from invoice where YEAR(created_at) = year;
+end;
+delimiter //
+-- ===
+delimiter //
+create procedure get_invoice_ById(in c_id int)
+begin
+select * from invoice where invoice_id = c_id;
+end;
+delimiter //
+-- ===
+delimiter //
+create procedure add_invoice(in c_customer_id int)
+begin
+insert into invoice(customer_id, total_amount, created_at)
+values(c_customer_id,0,now());
+
+end;
+delimiter //
+-- ===
+delimiter //
+create procedure update_invoice_totalamount(in p_invoice_id int)
+begin
+    declare total decimal(15,2) default 0;
+
+select sum(quantity * unit_price)
+into total
+from invoice_details
+where invoice_id = p_invoice_id;
+
+update invoice
+set total_amount = ifnull(total, 0)
+where invoice_id = p_invoice_id;
+end;
+delimiter //
+-- ===
 CREATE TABLE invoice_details
 (
-    id         INT PRIMARY KEY AUTO_INCREMENT,
+    invoicedt_id         INT PRIMARY KEY AUTO_INCREMENT,
     invoice_id INT,
     product_id INT,
     quantity   INT            NOT NULL,
     unit_price DECIMAL(12, 2) NOT NULL,
-    FOREIGN KEY (invoice_id) REFERENCES invoice (id)
+    FOREIGN KEY (invoice_id) REFERENCES invoice (invoice_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
     FOREIGN KEY (product_id) REFERENCES product (product_id)
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
+-- ===
+delimiter //
+
+create procedure get_invoice_detail_by_invoice_id(in p_invoice_id int)
+begin
+select
+    indt.invoicedt_id,
+    indt.invoice_id,
+    indt.product_id,
+    p.product_name,
+    indt.quantity,
+    indt.unit_price,
+    (indt.quantity * indt.unit_price) as total
+from
+    invoice_details indt
+        join
+    product p on indt.product_id = p.product_id
+where
+    indt.invoice_id = p_invoice_id;
+end ;
+
+delimiter //
+-- ===
+delimiter //
+create procedure insert_invoice_detail(
+    in c_invoice_id int,
+    in c_product_id int,
+    in c_quantity int,
+    in c_unit_price decimal(12,2)
+)
+begin
+insert into  invoice_details (invoice_id, product_id, quantity, unit_price)
+values (c_invoice_id, c_product_id, c_quantity, c_unit_price);
+end;
+delimiter //
+-- ===
+
+-- ===
+delimiter //
+create procedure get_all_invoice_detail()
+begin
+select * from invoice_details;
+end;
+delimiter //
+-- ===
+DELIMITER //
+CREATE PROCEDURE revenue_by_day()
+BEGIN
+SELECT DATE(created_at) AS day,
+    SUM(total_amount) AS total_revenue
+FROM invoice
+GROUP BY DATE(created_at)
+ORDER BY day;
+END;
+//
+DELIMITER ;
+-- ===
+DELIMITER //
+CREATE PROCEDURE revenue_by_month()
+BEGIN
+SELECT YEAR(created_at) AS year,
+    MONTH(created_at) AS month,
+    SUM(total_amount) AS total_revenue
+FROM invoice
+GROUP BY YEAR(created_at), MONTH(created_at)
+ORDER BY year, month;
+END;
+//
+DELIMITER ;
+-- ===
+DELIMITER //
+CREATE PROCEDURE revenue_by_year()
+BEGIN
+SELECT YEAR(created_at) AS year,
+    SUM(total_amount) AS total_revenue
+FROM invoice
+GROUP BY YEAR(created_at)
+ORDER BY year;
+END;
+//
+DELIMITER ;
 -- ===

@@ -8,7 +8,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class InvoiceDaoImp implements InvoiceDao{
@@ -16,23 +15,118 @@ public class InvoiceDaoImp implements InvoiceDao{
 
     @Override
     public List<Invoice> findByCustomerName(String name) {
-        return List.of();
+        List<Invoice> list = new ArrayList<>();
+        Connection conn = null;
+        CallableStatement callSt = null;
+        try {
+            conn = ConnectionDB.openConnection();
+            callSt = conn.prepareCall("{call find_invoice_by_customer_name(?)}");
+            callSt.setString(1, name);
+            ResultSet rs = callSt.executeQuery();
+            while (rs.next()) {
+                Invoice invoice = new Invoice();
+                invoice.setInvoice_id(rs.getInt("invoice_id"));
+                invoice.setCustomer_id(rs.getInt("customer_id"));
+                invoice.setCreated_at(rs.getDate("created_at").toLocalDate());
+                invoice.setTotal_amount(rs.getDouble("total_amount"));
+                list.add(invoice);
+            }
+        } catch (SQLException e) {
+            e.fillInStackTrace();
+        } catch(Exception e){
+            e.fillInStackTrace();
+        } finally {
+            ConnectionDB.closeConnection(conn, callSt);
+        }
+        return list;
     }
 
     @Override
-    public List<Invoice> findByDate(Date date) {
-        return List.of();
+    public List<Invoice> findByDate(int date) {
+        List<Invoice> list = new ArrayList<>();
+        Connection conn = null;
+        CallableStatement callSt = null;
+        try {
+            conn = ConnectionDB.openConnection();
+            callSt = conn.prepareCall("{call find_invoice_by_date(?)}");
+            callSt.setInt(1, date);
+            ResultSet rs = callSt.executeQuery();
+            while (rs.next()) {
+                Invoice invoice = new Invoice();
+                invoice.setInvoice_id(rs.getInt("invoice_id"));
+                invoice.setCustomer_id(rs.getInt("customer_id"));
+                invoice.setCreated_at(rs.getDate("created_at").toLocalDate());
+                invoice.setTotal_amount(rs.getDouble("total_amount"));
+                list.add(invoice);
+            }
+        } catch (SQLException e) {
+            e.fillInStackTrace();
+        } catch (Exception e) {
+            e.fillInStackTrace();
+        }finally {
+            ConnectionDB.closeConnection(conn, callSt);
+        }
+        return list;
     }
 
+
     @Override
-    public List<Invoice> findByMonth(int month, int year) {
-        return List.of();
+    public List<Invoice> findByMonth(int month) {
+        List<Invoice> list = new ArrayList<>();
+        Connection conn = null;
+        CallableStatement callSt = null;
+        try {
+            conn = ConnectionDB.openConnection();
+            callSt = conn.prepareCall("{call find_invoice_by_month(?)}");
+            callSt.setInt(1, month);
+            ResultSet rs = callSt.executeQuery();
+            while (rs.next()) {
+                Invoice invoice = new Invoice();
+                invoice.setInvoice_id(rs.getInt("invoice_id"));
+                invoice.setCustomer_id(rs.getInt("customer_id"));
+                invoice.setCreated_at(rs.getDate("created_at").toLocalDate());
+                invoice.setTotal_amount(rs.getDouble("total_amount"));
+                list.add(invoice);
+            }
+        } catch (SQLException e) {
+            e.fillInStackTrace();
+        } catch (Exception e) {
+            e.fillInStackTrace();
+        }finally {
+            ConnectionDB.closeConnection(conn, callSt);
+        }
+        return list;
     }
+
 
     @Override
     public List<Invoice> findByYear(int year) {
-        return List.of();
+        List<Invoice> list = new ArrayList<>();
+        Connection conn = null;
+        CallableStatement callSt = null;
+        try {
+            conn = ConnectionDB.openConnection();
+            callSt = conn.prepareCall("{call find_invoice_by_year(?)}");
+            callSt.setInt(1, year);
+            ResultSet rs = callSt.executeQuery();
+            while (rs.next()) {
+                Invoice invoice = new Invoice();
+                invoice.setInvoice_id(rs.getInt("invoice_id"));
+                invoice.setCustomer_id(rs.getInt("customer_id"));
+                invoice.setCreated_at(rs.getDate("created_at").toLocalDate());
+                invoice.setTotal_amount(rs.getDouble("total_amount"));
+                list.add(invoice);
+            }
+        } catch (SQLException e) {
+            e.fillInStackTrace();
+        } catch (Exception e) {
+            e.fillInStackTrace();
+        } finally {
+            ConnectionDB.closeConnection(conn, callSt);
+        }
+        return list;
     }
+
 
     @Override
     public Invoice findById(int id) {

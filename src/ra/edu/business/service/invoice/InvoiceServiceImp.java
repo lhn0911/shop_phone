@@ -38,6 +38,26 @@ public class InvoiceServiceImp implements InvoiceService{
 
     @Override
     public boolean updateTotalAmount(int invoiceId) {
-        return false;
+        return invoiceDao.updateTotalAmount(invoiceId);
+    }
+
+    @Override
+    public List<Invoice> findByCustomerName(String name) {
+        return invoiceDao.findByCustomerName(name);
+    }
+
+    @Override
+    public List<Invoice> findByDate(int date) {
+        return invoiceDao.findByDate(date);
+    }
+
+    @Override
+    public List<Invoice> findByMonth(int month) {
+        return invoiceDao.findByMonth(month);
+    }
+
+    @Override
+    public List<Invoice> findByYear(int year) {
+        return invoiceDao.findByYear(year);
     }
 }
