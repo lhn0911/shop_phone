@@ -99,7 +99,7 @@ public class InvoicedtUI {
             return;
         }
 
-        final int PAGE_SIZE = 5; // Số lượng sản phẩm mỗi trang
+        final int PAGE_SIZE = 5;
         int totalPages = (int) Math.ceil((double) details.size() / PAGE_SIZE);
         int currentPage = 1;
 
@@ -115,7 +115,6 @@ public class InvoicedtUI {
             System.out.println(header);
             System.out.println(line);
 
-            // In các chi tiết của hóa đơn
             for (int i = start; i < end; i++) {
                 InvoiceDetail detail = details.get(i);
                 Product product = productService.findById(detail.getProduct_id());
@@ -136,7 +135,6 @@ public class InvoicedtUI {
                     .sum();
             System.out.printf("TỔNG TIỀN: %.2f%n", totalAmount);
 
-            // Phân trang
             System.out.printf("Trang %d/%d\n", currentPage, totalPages);
             System.out.println("(n) next, (p) pre, (e) exit:");
             String input = scanner.nextLine().trim().toLowerCase();

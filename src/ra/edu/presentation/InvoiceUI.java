@@ -153,11 +153,12 @@ public class InvoiceUI {
                 }
                 if (createdInvoice != null) {
                     System.out.println("Mã hóa đơn: " + createdInvoice.getInvoice_id());
-                    System.out.print("Bạn có muốn thêm sản phẩm vào hóa đơn này? (Y/N): ");
-                    String choice = scanner.nextLine().trim().toUpperCase();
-                    if (choice.equals("Y")) {
-                        new InvoicedtUI().addProductToInvoice(createdInvoice.getInvoice_id());
-                    }
+//                    System.out.print("Bạn có muốn thêm sản phẩm vào hóa đơn này? (Y/N): ");
+//                    String choice = scanner.nextLine().trim().toUpperCase();
+                    new InvoicedtUI().addProductToInvoice(createdInvoice.getInvoice_id());
+//                    if (choice.equals("Y")) {
+//
+//                    }
                 } else {
                     System.out.println("Không thể xác định mã hóa đơn vừa tạo!");
                 }
