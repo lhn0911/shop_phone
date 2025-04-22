@@ -57,19 +57,18 @@ public class ProductUI {
                     return;
                 default:
                     System.out.println("Lựa chọn không hợp lệ");
-
             }
         } while (true);
     }
 
     public void searByName(Scanner scanner) {
-        String name =  ProductValidator.validateProductName(scanner, "Nhập tên sản phẩm muốn tìm");
+        String name = ProductValidator.validateProductName(scanner, "Nhập tên sản phẩm muốn tìm");
         List<Product> resultList = productService.findByName(name);
         if (resultList.isEmpty()) {
             System.out.println("Không tìm thấy sản phẩm nào thuộc tên \"" + name + "\".");
-        }else{
+        } else {
             System.out.println("Sản phẩm tên \"" + name + "\" là :");
-            printProductList(resultList);
+            printProductListPaginated(resultList);
         }
     }
 
@@ -84,9 +83,8 @@ public class ProductUI {
 
         List<Product> resultList = productService.searchByStock(minStock, maxStock);
         System.out.println("Các sản phẩm có tồn kho từ " + minStock + " đến " + maxStock + ":");
-        printProductList(resultList);
+        printProductListPaginated(resultList);
     }
-
 
     public void searchByPrice(Scanner scanner) {
         double minPrice = ProductValidator.validateProductPrice(scanner, "Nhập giá tối thiểu:");
@@ -99,9 +97,8 @@ public class ProductUI {
 
         List<Product> resultList = productService.searchByPrice(minPrice, maxPrice);
         System.out.println("Các sản phẩm trong khoảng giá từ " + minPrice + " đến " + maxPrice + ":");
-        printProductList(resultList);
+        printProductListPaginated(resultList);
     }
-
 
     public void searchByBrand(Scanner scanner) {
         String brand = ProductValidator.validateProductBrand(scanner, "Nhập nhãn hàng muốn tìm:");
@@ -111,7 +108,7 @@ public class ProductUI {
             System.out.println("Không tìm thấy sản phẩm nào thuộc nhãn hàng \"" + brand + "\".");
         } else {
             System.out.println("Các sản phẩm thuộc nhãn hàng \"" + brand + "\":");
-            printProductList(resultList);
+            printProductListPaginated(resultList);
         }
     }
 
@@ -141,7 +138,6 @@ public class ProductUI {
         }
     }
 
-
     public void updateProduct(Scanner scanner) {
         int id = ChoiceValidator.validateInput(scanner, "Nhập id cần sửa");
 
@@ -154,13 +150,23 @@ public class ProductUI {
         boolean isUpdated = false;
 
         do {
-            System.out.println("===== CẬP NHẬT SẢN PHẨM =====");
-            System.out.println("1. Tên sản phẩm (hiện tại: " + oldProduct.getProduct_name() + ")");
-            System.out.println("2. Nhãn hàng (hiện tại: " + oldProduct.getProduct_brand() + ")");
-            System.out.println("3. Giá (hiện tại: " + oldProduct.getProduct_price() + ")");
-            System.out.println("4. Tồn kho (hiện tại: " + oldProduct.getProduct_stock() + ")");
-            System.out.println("5. Lưu và quay lại");
-            System.out.println("=================================");
+            String line = "+-----+---------------------------+----------------------------------------+";
+            System.out.println(line);
+            System.out.println("|                         CẬP NHẬT SẢN PHẨM                                |");
+            System.out.println(line);
+            System.out.printf("| %-1s | %-25s | %-38s |\n", "STT", "Thông tin", "Giá trị hiện tại");
+            System.out.println(line);
+            System.out.printf("| %-3s | %-25s | %-38s |\n", "1", "Tên sản phẩm", oldProduct.getProduct_name());
+            System.out.println(line);
+            System.out.printf("| %-3s | %-25s | %-38s |\n", "2", "Nhãn hàng", oldProduct.getProduct_brand());
+            System.out.println(line);
+            System.out.printf("| %-3s | %-25s | %-38s |\n", "3", "Giá", formatPrice(oldProduct.getProduct_price()));
+            System.out.println(line);
+            System.out.printf("| %-3s | %-25s | %-38d |\n", "4", "Tồn kho", oldProduct.getProduct_stock());
+            System.out.println(line);
+            System.out.printf("| %-3s | %-25s | %-38s |\n", "5", "Lưu và quay lại", "");
+            System.out.println(line);
+
             int choice = ChoiceValidator.validateChoice(scanner);
             switch (choice) {
                 case 1:
@@ -208,7 +214,6 @@ public class ProductUI {
         } while (true);
     }
 
-
     public void addProduct(Scanner scanner) {
         int input = ChoiceValidator.validateInput(scanner, "Nhập vào số lượng cần thêm");
         for (int i = 0; i < input; i++) {
@@ -243,27 +248,65 @@ public class ProductUI {
         displayListProduct();
     }
 
-
     public void displayListProduct() {
         System.out.println("====== DANH SÁCH SẢN PHẨM ======");
         List<Product> products = productService.findAll();
-        printProductList(products);
+        printProductListPaginated(products);
         System.out.println("================================");
     }
 
-    public void printProductList(List<Product> products) {
+    public void printProductListPaginated(List<Product> products) {
         if (products.isEmpty()) {
             System.out.println("Không có sản phẩm nào để hiển thị.");
-        } else {
-            System.out.printf("%-5s %-25s %-15s %-12s %-10s\n",
-                    "ID", "Tên sản phẩm", "Nhãn hiệu", "Giá bán", "Tồn kho");
-            for (Product p : products) {
-                System.out.printf("%-5d %-25s %-15s %-15s %-10d\n",
+            return;
+        }
+
+        final int PAGE_SIZE = 5;
+        int totalPages = (int) Math.ceil((double) products.size() / PAGE_SIZE);
+        int currentPage = 1;
+
+        String line = "+-----+---------------------------+----------------+------------------+------------+";
+        String header = String.format("| %-3s | %-25s | %-14s | %-16s | %-10s |",
+                "ID", "Tên sản phẩm", "Nhãn hiệu", "Giá bán", "Tồn kho");
+
+        while (true) {
+            int start = (currentPage - 1) * PAGE_SIZE;
+            int end = Math.min(start + PAGE_SIZE, products.size());
+            System.out.println(line);
+            System.out.println(header);
+            System.out.println(line);
+            for (int i = start; i < end; i++) {
+                Product p = products.get(i);
+                System.out.printf("| %-3d | %-25s | %-14s | %16s | %10d |\n",
                         p.getProduct_id(), p.getProduct_name(), p.getProduct_brand(),
                         formatPrice(p.getProduct_price()), p.getProduct_stock());
+                System.out.println(line);
+            }
+
+            System.out.printf("Trang %d/%d\n", currentPage, totalPages);
+            System.out.println("(n) next, (p) pre, (e) exit:");
+            String input = scanner.nextLine().trim().toLowerCase();
+
+            if (input.equals("n")) {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                } else {
+                    System.out.println("Đây là trang cuối cùng.");
+                }
+            } else if (input.equals("p")) {
+                if (currentPage > 1) {
+                    currentPage--;
+                } else {
+                    System.out.println("Đây là trang đầu tiên.");
+                }
+            } else if (input.equals("e")) {
+                break;
+            } else {
+                System.out.println("Lựa chọn không hợp lệ.");
             }
         }
     }
+
     public String formatPrice(double price) {
         if (price == (long) price) {
             return String.format("%,d", (long) price);
@@ -271,6 +314,4 @@ public class ProductUI {
             return new DecimalFormat("#,###.########").format(price);
         }
     }
-
-
 }

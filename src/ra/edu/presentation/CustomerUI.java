@@ -56,7 +56,7 @@ public class CustomerUI {
             System.out.println("Không tìm thấy khách hàng nào có tên \"" + name + "\".");
         } else {
             System.out.println("Khách hàng có tên \"" + name + "\" là:");
-            printCustomerList(resultList);
+            printCustomerListPaginated(resultList);
         }
 
     }
@@ -100,13 +100,22 @@ public class CustomerUI {
         boolean isUpdated = false;
 
         do {
-            System.out.println("===== CẬP NHẬT THÔNG TIN KHÁCH HÀNG =====");
-            System.out.println("1. Họ tên (hiện tại: " + oldCustomer.getCustomer_name() + ")");
-            System.out.println("2. Số điện thoại (hiện tại: " + oldCustomer.getCustomer_phone() + ")");
-            System.out.println("3. Email (hiện tại: " + oldCustomer.getCustomer_email() + ")");
-            System.out.println("4. Địa chỉ (hiện tại: " + oldCustomer.getCustomer_address() + ")");
-            System.out.println("5. Lưu và quay lại");
-            System.out.println("==========================================");
+            String line = "+-----+---------------------------+----------------------------------------+";
+            System.out.println(line);
+            System.out.println(" CẬP NHẬT THÔNG TIN KHÁCH HÀNG ");
+            System.out.println(line);
+            System.out.printf("| %-1s | %-25s | %-38s |\n", "STT", "Thông tin", "Giá trị hiện tại");
+            System.out.println(line);
+            System.out.printf("| %-2s | %-25s | %-38s |\n", "1", "Họ tên", oldCustomer.getCustomer_name());
+            System.out.println(line);
+            System.out.printf("| %-2s | %-25s | %-38s |\n", "2", "Số điện thoại", oldCustomer.getCustomer_phone());
+            System.out.println(line);
+            System.out.printf("| %-2s | %-25s | %-38s |\n", "3", "Email", oldCustomer.getCustomer_email());
+            System.out.println(line);
+            System.out.printf("| %-2s | %-25s | %-38s |\n", "4", "Địa chỉ", oldCustomer.getCustomer_address());
+            System.out.println(line);
+            System.out.printf("| %-2s | %-25s | %-38s |\n", "5", "Lưu và quay lại", "");
+            System.out.println(line);
 
             int choice = ChoiceValidator.validateChoice(scanner);
             switch (choice) {
@@ -205,26 +214,65 @@ public class CustomerUI {
 
     public void displayListCustomer() {
         System.out.println("====DANH SÁCH KHÁCH HÀNG====");
-        List<Customer> customer = customerService.findAll();
-        printCustomerList(customer);
+        List<Customer> customerList = customerService.findAll();
+        printCustomerListPaginated(customerList);
         System.out.println("============================");
     }
 
-    public void printCustomerList(List<Customer> customer) {
-        if (customer.isEmpty()) {
+    public void printCustomerListPaginated(List<Customer> customerList) {
+        if (customerList.isEmpty()) {
             System.out.println("Không có khách hàng nào để hiển thị.");
-        } else {
-            System.out.printf("%-5s %-25s %-20s %-30s %-30s\n",
-                    "ID", "Tên khách hàng", "Số điện thoại", "Email", "Địa chỉ");
-            for (Customer c : customer) {
-                System.out.printf("%-5d %-25s %-20s %-30s %-30s\n",
-                        c.getCustomer_id(), c.getCustomer_name(), c.getCustomer_phone(),
-                        c.getCustomer_email(), c.getCustomer_address());
+            return;
+        }
+
+        final int PAGE_SIZE = 5;
+        int totalPages = (int) Math.ceil((double) customerList.size() / PAGE_SIZE);
+        int currentPage = 1;
+
+        String line = "+-----+---------------------------+----------------------+------------------------------+------------------------------+";
+        String header = String.format("| %-3s | %-25s | %-20s | %-28s | %-28s |",
+                "ID", "Tên khách hàng", "Số điện thoại", "Email", "Địa chỉ");
+
+        while (true) {
+            int start = (currentPage - 1) * PAGE_SIZE;
+            int end = Math.min(start + PAGE_SIZE, customerList.size());
+            System.out.println(line);
+            System.out.println(header);
+            System.out.println(line);
+            for (int i = start; i < end; i++) {
+                Customer c = customerList.get(i);
+                System.out.printf("| %-3d | %-25s | %-20s | %-28s | %-28s |\n",
+                        c.getCustomer_id(),
+                        c.getCustomer_name(),
+                        c.getCustomer_phone(),
+                        c.getCustomer_email(),
+                        c.getCustomer_address());
+                System.out.println(line);
+            }
+
+            System.out.printf("Trang %d/%d\n", currentPage, totalPages);
+            System.out.println("(n) next, (p) pre, (e) exit:");
+            String input = scanner.nextLine().trim().toLowerCase();
+
+            if (input.equals("n")) {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                } else {
+                    System.out.println("Đây là trang cuối cùng.");
+                }
+            } else if (input.equals("p")) {
+                if (currentPage > 1) {
+                    currentPage--;
+                } else {
+                    System.out.println("Đây là trang đầu tiên.");
+                }
+            } else if (input.equals("e")) {
+                break;
+            } else {
+                System.out.println("Lựa chọn không hợp lệ.");
             }
         }
     }
-//    public void printSize(){
-//        int page =1;
-//        int
-//    }
+
+
 }

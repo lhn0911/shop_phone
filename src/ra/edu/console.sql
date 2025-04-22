@@ -252,14 +252,15 @@ create procedure find_invoice_by_customer_name(in c_customer_name varchar(100))
 begin
 select * from invoice i
                   join customer c on i.customer_id = c.customer_id
-where c.customer_name like concat('%',c.customer_name,'%');
+where c.customer_name = c_customer_name and c.customer_name like concat('%',c.customer_name,'%');
 end;
 delimiter //
 -- ===
 delimiter //
-create procedure find_invoice_by_date(in search_date int)
+create procedure find_invoice_by_date(in c_date int)
 begin
-select * from invoice where DATE(created_at) = search_date;
+select * from invoice
+where DAY(created_at) = c_date;
 end;
 delimiter //
 -- ===
@@ -275,6 +276,13 @@ delimiter //
 create procedure find_invoice_by_year(in year int)
 begin
 select * from invoice where YEAR(created_at) = year;
+end;
+delimiter //
+-- ===
+delimiter //
+create procedure find_invoice_by_time(in date int,in month int,in year int)
+begin
+select * from invoice where DAY(created_at) = date and MONTH(created_at) = month and YEAR(created_at) = year;
 end;
 delimiter //
 -- ===

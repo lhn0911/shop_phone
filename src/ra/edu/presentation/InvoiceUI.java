@@ -11,6 +11,7 @@ import ra.edu.validate.CustomerValidator;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,8 @@ public class InvoiceUI {
     private final Scanner scanner = new Scanner(System.in);
     private final InvoiceService invoiceService = new InvoiceServiceImp();
     private final CustomerService customerService = new CustomerServiceImp();
-
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    final int PAGE_SIZE = 5;
     public void invoiceMenu() {
         do {
             System.out.println("\n====== QUẢN LÝ ĐƠN HÀNG ======");
@@ -52,10 +54,8 @@ public class InvoiceUI {
         do {
             System.out.println("=======Tìm kiếm đơn hàng=======");
             System.out.println("1. Tìm kiếm theo tên khách hàng");
-            System.out.println("2. Tìm kiếm theo ngày (dd)");
-            System.out.println("3. Tìm kiếm theo tháng (MM)");
-            System.out.println("4. Tìm kiếm theo năm (yyyy)");
-            System.out.println("5. Quay lại menu chính");
+            System.out.println("2. Tìm kiếm theo ngày/tháng/năm(dd/mm/yyyy)");
+            System.out.println("3. Quay lại menu chính");
             System.out.println("===============================");
             int choice = ChoiceValidator.validateChoice(scanner);
             List<Invoice> result = new ArrayList<Invoice>();
@@ -66,22 +66,23 @@ public class InvoiceUI {
                     result = invoiceService.findByCustomerName(name);
                     break;
                 case 2:
-                    int date = ChoiceValidator.validateInput(scanner, "Nhập ngày");
-                    result = invoiceService.findByDate(date);
+                    System.out.print("Nhập ngày (dd/MM/yyyy): ");
+                    String input = scanner.nextLine();
+                    try {
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                        LocalDate date = LocalDate.parse(input, formatter);
+
+                        int day = date.getDayOfMonth();
+                        int month = date.getMonthValue();
+                        int year = date.getYear();
+
+                        result = invoiceService.findByTime(day, month, year);
+                    } catch (DateTimeParseException e) {
+                        System.out.println("Ngày không hợp lệ. Vui lòng nhập đúng định dạng dd/MM/yyyy.");
+                    }
                     break;
 
                 case 3:
-
-                    int month = ChoiceValidator.validateInput(scanner, "Nhập tháng");
-                    result = invoiceService.findByMonth(month);
-                    break;
-
-                case 4:
-                    int year = ChoiceValidator.validateInput(scanner, "Nhập năm");
-                    result = invoiceService.findByYear(year);
-                    break;
-
-                case 5:
                     return;
                 default:
                     System.out.println("Lựa chọn không hợp lệ");
@@ -169,33 +170,50 @@ public class InvoiceUI {
     public void displayListInvoice() {
         System.out.println("\n====== DANH SÁCH HÓA ĐƠN ======");
         List<Invoice> invoices = invoiceService.findAll();
-        printInvoiceList(invoices);
-        System.out.println("================================");
-        if (!invoices.isEmpty()) {
-            System.out.print("Nhập ID hóa đơn để quản lý (0 để quay lại): ");
-            int id = ChoiceValidator.validateChoice(scanner);
-            if (id == 0) return;
-            Invoice selected = invoiceService.findById(id);
-            if (selected != null) {
-                new InvoicedtUI().invoiceDetailMenu(selected);
-            } else {
-                System.out.println("Không tìm thấy hóa đơn có ID: " + id);
-            }
-        }
-    }
+        int totalPages = (int) Math.ceil((double) invoices.size() / PAGE_SIZE);
+        int currentPage = 1;
 
-    public void printInvoiceList(List<Invoice> invoices) {
-        if (invoices.isEmpty()) {
-            System.out.println("Không có hóa đơn nào để hiển thị.");
-        } else {
-            System.out.printf("%-5s %-15s %-20s %-15s\n",
-                    "ID", "Mã KH", "Ngày tạo", "Tổng tiền");
-            for (Invoice invoice : invoices) {
-                System.out.printf("%-5d %-15d %-20s %-15s\n",
+        String line = "+----+-------+-----------------+-----------------+";
+        String header = String.format("| %-2s | %-2s | %-15s | %-15s |", "ID", "Mã KH", "Ngày tạo", "Tổng tiền");
+
+        while (true) {
+            int start = (currentPage - 1) * PAGE_SIZE;
+            int end = Math.min(start + PAGE_SIZE, invoices.size());
+
+            System.out.println(line);
+            System.out.println(header);
+            System.out.println(line);
+
+            for (int i = start; i < end; i++) {
+                Invoice invoice = invoices.get(i);
+                System.out.printf("| %-2d | %-5d | %-15s | %-15s |\n",
                         invoice.getInvoice_id(),
                         invoice.getCustomer_id(),
-                        invoice.getCreated_at(),
+                        invoice.getCreated_at().format(formatter),
                         formatPrice(invoice.getTotal_amount()));
+                System.out.println(line);
+            }
+
+            System.out.printf("Trang %d/%d\n", currentPage, totalPages);
+            System.out.println("(n) next, (p) pre, (e) exit:");
+            String input = scanner.nextLine().trim().toLowerCase();
+
+            if (input.equals("n")) {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                } else {
+                    System.out.println("Đây là trang cuối cùng.");
+                }
+            } else if (input.equals("p")) {
+                if (currentPage > 1) {
+                    currentPage--;
+                } else {
+                    System.out.println("Đây là trang đầu tiên.");
+                }
+            } else if (input.equals("e")) {
+                break;
+            } else {
+                System.out.println("Lựa chọn không hợp lệ.");
             }
         }
     }

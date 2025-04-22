@@ -38,10 +38,9 @@ public class InvoicedtUI {
                     addProductToInvoice(invoice.getInvoice_id());
                     break;
                 case 3:
-                    // TODO: cập nhật chi tiết hóa đơn (nếu cần)
                     break;
                 case 4:
-                    // TODO: xóa chi tiết hóa đơn (nếu cần)
+
                     break;
                 case 5:
                     return;
@@ -97,25 +96,69 @@ public class InvoicedtUI {
         List<InvoiceDetail> details = invoicedtService.findByInvoiceId(invoiceId);
         if (details.isEmpty()) {
             System.out.println("Không có sản phẩm nào trong hóa đơn này!");
-        } else {
-            System.out.printf("%-5s %-5s %-20s %-10s %-15s %-15s%n",
-                    "ID", "Mã DH", "Tên sản phẩm", "Số lượng", "Đơn giá", "Thành tiền");
-            for (InvoiceDetail detail : details) {
+            return;
+        }
+
+        final int PAGE_SIZE = 5; // Số lượng sản phẩm mỗi trang
+        int totalPages = (int) Math.ceil((double) details.size() / PAGE_SIZE);
+        int currentPage = 1;
+
+        String line = "+-----+-------+---------------------+------------+-----------------+-----------------+";
+        String header = String.format("| %-5s | %-5s | %-20s | %-10s | %-15s | %-15s |",
+                "ID", "Mã DH", "Tên sản phẩm", "Số lượng", "Đơn giá", "Thành tiền");
+
+        while (true) {
+            int start = (currentPage - 1) * PAGE_SIZE;
+            int end = Math.min(start + PAGE_SIZE, details.size());
+
+            System.out.println(line);
+            System.out.println(header);
+            System.out.println(line);
+
+            // In các chi tiết của hóa đơn
+            for (int i = start; i < end; i++) {
+                InvoiceDetail detail = details.get(i);
                 Product product = productService.findById(detail.getProduct_id());
                 String productName = product != null ? product.getProduct_name() : "Không xác định";
-                System.out.printf("%-5d %-5d %-20s %-10d %-15.2f %-15.2f%n",
+
+                System.out.printf("| %-5d | %-5d | %-20s | %-10d | %-15.2f | %-15.2f |\n",
                         detail.getInvoicedt_id(),
                         detail.getInvoice_id(),
                         productName,
                         detail.getQuantity(),
                         detail.getUnit_price(),
                         detail.getQuantity() * detail.getUnit_price());
+                System.out.println(line);
             }
-            System.out.println("------------------------------------------------------");
+
             double totalAmount = details.stream()
                     .mapToDouble(detail -> detail.getQuantity() * detail.getUnit_price())
                     .sum();
             System.out.printf("TỔNG TIỀN: %.2f%n", totalAmount);
+
+            // Phân trang
+            System.out.printf("Trang %d/%d\n", currentPage, totalPages);
+            System.out.println("(n) next, (p) pre, (e) exit:");
+            String input = scanner.nextLine().trim().toLowerCase();
+
+            if (input.equals("n")) {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                } else {
+                    System.out.println("Đây là trang cuối cùng.");
+                }
+            } else if (input.equals("p")) {
+                if (currentPage > 1) {
+                    currentPage--;
+                } else {
+                    System.out.println("Đây là trang đầu tiên.");
+                }
+            } else if (input.equals("e")) {
+                break;
+            } else {
+                System.out.println("Lựa chọn không hợp lệ.");
+            }
         }
     }
+
 }

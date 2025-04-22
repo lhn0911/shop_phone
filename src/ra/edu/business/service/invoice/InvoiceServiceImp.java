@@ -46,18 +46,9 @@ public class InvoiceServiceImp implements InvoiceService{
         return invoiceDao.findByCustomerName(name);
     }
 
-    @Override
-    public List<Invoice> findByDate(int date) {
-        return invoiceDao.findByDate(date);
-    }
 
     @Override
-    public List<Invoice> findByMonth(int month) {
-        return invoiceDao.findByMonth(month);
-    }
-
-    @Override
-    public List<Invoice> findByYear(int year) {
-        return invoiceDao.findByYear(year);
+    public List<Invoice> findByTime(int date, int month, int year) {
+        return invoiceDao.findByTime(date, month, year);
     }
 }
