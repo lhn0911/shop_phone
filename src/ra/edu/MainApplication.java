@@ -1,10 +1,7 @@
 package ra.edu;
 
 import ra.edu.business.model.account.Account;
-import ra.edu.presentation.CustomerUI;
-import ra.edu.presentation.InvoiceUI;
-import ra.edu.presentation.LoginUI;
-import ra.edu.presentation.ProductUI;
+import ra.edu.presentation.*;
 import ra.edu.validate.ChoiceValidator;
 
 import java.util.Scanner;
@@ -17,6 +14,7 @@ public class MainApplication {
         ProductUI productUI = new ProductUI();
         CustomerUI customerUI = new CustomerUI();
         InvoiceUI invoiceUI = new InvoiceUI();
+        RevenueUI revenueUI = new RevenueUI();
         Account currentAccount = null;
         do {
             if (currentAccount == null) {
@@ -56,6 +54,7 @@ public class MainApplication {
                         invoiceUI.invoiceMenu();
                         break;
                     case 4:
+                        revenueUI.RevenueMenu();
                         break;
                     case 5:
                         currentAccount = null;

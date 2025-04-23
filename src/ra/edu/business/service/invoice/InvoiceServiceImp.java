@@ -51,4 +51,19 @@ public class InvoiceServiceImp implements InvoiceService{
     public List<Invoice> findByTime(int date, int month, int year) {
         return invoiceDao.findByTime(date, month, year);
     }
+
+    @Override
+    public List<Invoice> revenueByDay() {
+        return invoiceDao.revenueByDay();
+    }
+
+    @Override
+    public List<Invoice> revenueByMonth() {
+        return invoiceDao.revenueByMonth();
+    }
+
+    @Override
+    public List<Invoice> revenueByYear() {
+        return invoiceDao.revenueByYear();
+    }
 }

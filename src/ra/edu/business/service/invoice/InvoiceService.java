@@ -10,4 +10,7 @@ public interface InvoiceService extends AppService<Invoice> {
     boolean updateTotalAmount(int invoiceId);
     List<Invoice> findByCustomerName(String name);
     List<Invoice> findByTime(int date, int month, int year);
+    List<Invoice> revenueByDay();
+    List<Invoice> revenueByMonth();
+    List<Invoice> revenueByYear();
 }
