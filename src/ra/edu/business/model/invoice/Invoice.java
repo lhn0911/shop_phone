@@ -1,8 +1,16 @@
 package ra.edu.business.model.invoice;
 
-import java.time.LocalDate;
+import ra.edu.business.model.IApp;
+import ra.edu.business.model.customer.Customer;
+import ra.edu.business.service.customer.CustomerService;
+import ra.edu.business.service.customer.CustomerServiceImp;
+import ra.edu.validate.ChoiceValidator;
 
-public class Invoice {
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Scanner;
+
+public class Invoice implements IApp {
     private int invoice_id;
     private int Customer_id;
     private LocalDate created_at;
@@ -59,4 +67,36 @@ public class Invoice {
                 ", total_amount=" + total_amount +
                 '}';
     }
+
+    @Override
+    public void inputData(Scanner scanner) {
+        CustomerService customerService = new CustomerServiceImp();
+        List<Customer> customers = customerService.findAll();
+        if (customers.isEmpty()) {
+            System.out.println("Không có khách hàng nào trong hệ thống.");
+            return;
+        }
+
+        System.out.println("--- DANH SÁCH KHÁCH HÀNG ---");
+        System.out.printf("%-5s %-20s %-15s%n", "ID", "Tên khách hàng", "SĐT");
+        for (Customer customer : customers) {
+            System.out.printf("%-5d %-20s %-15s%n",
+                    customer.getCustomer_id(),
+                    customer.getCustomer_name(),
+                    customer.getCustomer_phone());
+        }
+
+        System.out.print("Chọn ID khách hàng: ");
+        int customerId = ChoiceValidator.validateChoice(scanner);
+        Customer selectedCustomer = customerService.findById(customerId);
+        if (selectedCustomer == null) {
+            System.out.println("Khách hàng không tồn tại!");
+            return;
+        }
+
+        this.setCustomer_id(customerId);
+        this.setCreated_at(LocalDate.now());
+        this.setTotal_amount(0.0);  // Tạm thời gán 0, sẽ cập nhật sau khi thêm sản phẩm
+    }
+
 }

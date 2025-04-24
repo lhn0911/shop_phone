@@ -36,6 +36,7 @@ public class MainApplication {
 
                 }
             } else {
+                System.out.println("Xin chào, "+currentAccount.getUsername());
                 System.out.println("=========Menu chính========");
                 System.out.println("1. Quản lý sản phẩm điện thoại");
                 System.out.println("2. Quản lý khách hàng");

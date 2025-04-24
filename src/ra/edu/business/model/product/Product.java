@@ -1,5 +1,8 @@
 package ra.edu.business.model.product;
 
+
+import java.util.Scanner;
+
 public class Product {
     private int product_id;
     private String product_name;
@@ -68,4 +71,5 @@ public class Product {
                 ", product_stock=" + product_stock +
                 '}';
     }
+
 }

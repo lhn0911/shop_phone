@@ -19,30 +19,35 @@ import java.util.Scanner;
 
 public class InvoiceUI {
     private final Scanner scanner = new Scanner(System.in);
+    InvoicedtUI invoicedtUI = new InvoicedtUI();
     private final InvoiceService invoiceService = new InvoiceServiceImp();
     private final CustomerService customerService = new CustomerServiceImp();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     final int PAGE_SIZE = 5;
     public void invoiceMenu() {
         do {
-            System.out.println("\n====== QUẢN LÝ ĐƠN HÀNG ======");
-            System.out.println("1. Hiển thị danh sách đơn hàng");
-            System.out.println("2. Thêm mới đơn hàng");
-            System.out.println("3. Tìm kiếm hóa đơn");
-            System.out.println("4. Quay lại menu chính");
-            System.out.println("===============================");
+            System.out.println("+---------- QUẢN LÝ ĐƠN HÀNG ----------+");
+            System.out.println("| 1. Hiển thị danh sách đơn hàng       |");
+            System.out.println("| 2. Chi tiết đơn hàng                 |");
+            System.out.println("| 3. Thêm mới đơn hàng                 |");
+            System.out.println("| 4. Tìm kiếm hóa đơn                  |");
+            System.out.println("| 5. Quay lại menu chính               |");
+            System.out.println("+--------------------------------------+");
             int choice = ChoiceValidator.validateChoice(scanner);
             switch (choice) {
                 case 1:
                     displayListInvoice();
                     break;
                 case 2:
-                    addNewInvoice();
+                    displaydetail();
                     break;
                 case 3:
-                    searchInvoice();
+                    addNewInvoice();
                     break;
                 case 4:
+                    searchInvoice();
+                    break;
+                case 5:
                     return;
                 default:
                     System.out.println("Lựa chọn không hợp lệ");
@@ -50,13 +55,28 @@ public class InvoiceUI {
         } while (true);
     }
 
+    private void displaydetail() {
+        List<Invoice> invoices = invoiceService.findAll();
+        if (!invoices.isEmpty()) {
+            System.out.print("Nhập ID hóa đơn để quản lý (0 để quay lại): ");
+            int id = ChoiceValidator.validateChoice(scanner);
+            if (id == 0) return;
+            Invoice selected = invoiceService.findById(id);
+            if (selected != null) {
+                invoicedtUI.invoiceDetailMenu(selected);
+            } else {
+                System.out.println("Không tìm thấy hóa đơn có ID: " + id);
+            }
+        }
+    }
+
     public void searchInvoice() {
         do {
-            System.out.println("=======Tìm kiếm đơn hàng=======");
-            System.out.println("1. Tìm kiếm theo tên khách hàng");
-            System.out.println("2. Tìm kiếm theo ngày/tháng/năm(dd/mm/yyyy)");
-            System.out.println("3. Quay lại menu chính");
-            System.out.println("===============================");
+            System.out.println("+--------------Tìm kiếm đơn hàng--------------+");
+            System.out.println("| 1. Tìm kiếm theo tên khách hàng             |");
+            System.out.println("| 2. Tìm kiếm theo ngày/tháng/năm(dd/mm/yyyy) |");
+            System.out.println("| 3. Quay lại menu chính                      |");
+            System.out.println("+---------------------------------------------+");
             int choice = ChoiceValidator.validateChoice(scanner);
             List<Invoice> result = new ArrayList<Invoice>();
 
@@ -106,67 +126,41 @@ public class InvoiceUI {
     }
 
 
-    private void addNewInvoice() {
-        int input = ChoiceValidator.validateInput(scanner, "Nhập vào số lượng hóa đơn cần thêm: ");
-        for (int i = 0; i < input; i++) {
-            System.out.println("\n=== THÊM MỚI ĐƠN HÀNG ===");
+    public void addNewInvoice() {
+        System.out.println("\n=== THÊM MỚI ĐƠN HÀNG ===");
 
-            List<Customer> customers = customerService.findAll();
-            if (customers.isEmpty()) {
-                System.out.println("Không có khách hàng nào trong hệ thống. Vui lòng thêm khách hàng trước!");
-                return;
-            }
+        Invoice newInvoice = new Invoice();
+        newInvoice.inputData(scanner);
 
-            System.out.println("--- DANH SÁCH KHÁCH HÀNG ---");
-            System.out.printf("%-5s %-20s %-15s%n", "ID", "Tên khách hàng", "SĐT");
-            for (Customer customer : customers) {
-                System.out.printf("%-5d %-20s %-15s%n",
-                        customer.getCustomer_id(),
-                        customer.getCustomer_name(),
-                        customer.getCustomer_phone());
-            }
+        if (newInvoice.getCustomer_id() == 0) {
+            return;
+        }
 
-            System.out.print("Chọn ID khách hàng: ");
-            int customerId = ChoiceValidator.validateChoice(scanner);
-            Customer selectedCustomer = customerService.findById(customerId);
-            if (selectedCustomer == null) {
-                System.out.println("Khách hàng không tồn tại!");
-                return;
-            }
+        boolean saved = invoiceService.save(newInvoice);
+        if (saved) {
+            Customer selectedCustomer = customerService.findById(newInvoice.getCustomer_id());
+            System.out.println("Đã tạo hóa đơn cho khách hàng: " + selectedCustomer.getCustomer_name());
 
-            Invoice newInvoice = new Invoice();
-            newInvoice.setCustomer_id(customerId);
-            newInvoice.setCreated_at(LocalDate.now());
-            newInvoice.setTotal_amount(0.0);
-
-            boolean saved = invoiceService.save(newInvoice);
-            if (saved) {
-                System.out.println("Đã tạo hóa đơn cho khách hàng: " + selectedCustomer.getCustomer_name());
-
-                List<Invoice> invoices = invoiceService.findAll();
-                Invoice createdInvoice = null;
-                for (int j = invoices.size() - 1; j >= 0; j--) {
-                    if (invoices.get(j).getCustomer_id() == customerId) {
-                        createdInvoice = invoices.get(j);
-                        break;
-                    }
+            List<Invoice> invoices = invoiceService.findAll();
+            Invoice createdInvoice = null;
+            for (int j = invoices.size() - 1; j >= 0; j--) {
+                if (invoices.get(j).getCustomer_id() == newInvoice.getCustomer_id()) {
+                    createdInvoice = invoices.get(j);
+                    break;
                 }
-                if (createdInvoice != null) {
-                    System.out.println("Mã hóa đơn: " + createdInvoice.getInvoice_id());
-//                    System.out.print("Bạn có muốn thêm sản phẩm vào hóa đơn này? (Y/N): ");
-//                    String choice = scanner.nextLine().trim().toUpperCase();
-                    new InvoicedtUI().addProductToInvoice(createdInvoice.getInvoice_id());
-//                    if (choice.equals("Y")) {
-//
-//                    }
-                } else {
-                    System.out.println("Không thể xác định mã hóa đơn vừa tạo!");
-                }
+            }
+
+            if (createdInvoice != null) {
+                System.out.println("Mã hóa đơn: " + createdInvoice.getInvoice_id());
+                new InvoicedtUI().addProductToInvoice(createdInvoice.getInvoice_id());
             } else {
-                System.out.println("Tạo hóa đơn thất bại!");
+                System.out.println("Không thể xác định mã hóa đơn vừa tạo!");
             }
+        } else {
+            System.out.println("Tạo hóa đơn thất bại!");
         }
     }
+
 
     public void displayListInvoice() {
         System.out.println("\n====== DANH SÁCH HÓA ĐƠN ======");

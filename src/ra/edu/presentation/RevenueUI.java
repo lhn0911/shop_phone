@@ -1,5 +1,6 @@
 package ra.edu.presentation;
 
+import ra.edu.business.dao.invoice.RevenueDTO;
 import ra.edu.business.model.invoice.Invoice;
 import ra.edu.business.service.invoice.InvoiceService;
 import ra.edu.business.service.invoice.InvoiceServiceImp;
@@ -25,13 +26,13 @@ public class RevenueUI {
             int choice = ChoiceValidator.validateChoice(scanner);
             switch (choice) {
                 case 1:
-                    printRevenueListPaginated(invoiceService.revenueByDay(), "DOANH THU THEO NGÀY");
+                    RevenueByDay();
                     break;
                 case 2:
-                    printRevenueListPaginated(invoiceService.revenueByMonth(), "DOANH THU THEO THÁNG");
+                    RevenueByMonth();
                     break;
                 case 3:
-                    printRevenueListPaginated(invoiceService.revenueByYear(), "DOANH THU THEO NĂM");
+                    RevenueByYear();
                     break;
                 case 4:
                     return;
@@ -41,7 +42,22 @@ public class RevenueUI {
         } while (true);
     }
 
-    private void printRevenueListPaginated(List<Invoice> list, String title) {
+    public void RevenueByDay() {
+        List<RevenueDTO> list = invoiceService.revenueByDay();
+        printRevenueListPaginated(list, "DOANH THU THEO NGÀY");
+    }
+
+    public void RevenueByMonth() {
+        List<RevenueDTO> list = invoiceService.revenueByMonth();
+        printRevenueListPaginated(list, "DOANH THU THEO THÁNG");
+    }
+
+    public void RevenueByYear() {
+        List<RevenueDTO> list = invoiceService.revenueByYear();
+        printRevenueListPaginated(list, "DOANH THU THEO NĂM");
+    }
+
+    public void printRevenueListPaginated(List<RevenueDTO> list, String title) {
         if (list.isEmpty()) {
             System.out.println("Không có dữ liệu doanh thu.");
             return;
@@ -52,7 +68,7 @@ public class RevenueUI {
         int currentPage = 1;
 
         String line = "+---------------------+----------------------+";
-        String header = String.format("| %-19s | %-20s |", "Ngày/Tháng/Năm", "Tổng doanh thu");
+        String header = String.format("| %-19s | %-20s |", "Thời gian", "Tổng doanh thu");
 
         while (true) {
             System.out.println("\n===== " + title + " =====");
@@ -63,11 +79,22 @@ public class RevenueUI {
             System.out.println(header);
             System.out.println(line);
             for (int i = start; i < end; i++) {
-                Invoice invoice = list.get(i);
-                System.out.printf("| %-19s | %-20.2f |\n",
-                        invoice.getCreated_at().format(formatter),
-                        invoice.getTotal_amount());
+                RevenueDTO dto = list.get(i);
+                String timeString;
+
+                if (dto.getDate() != null) {
+                    timeString = dto.getDate().format(formatter);
+                } else if (dto.getMonth() != null && dto.getYear() != null) {
+                    timeString = String.format("%02d/%d", dto.getMonth(), dto.getYear());
+                } else if (dto.getYear() != null) {
+                    timeString = String.valueOf(dto.getYear());
+                } else {
+                    timeString = "Không xác định";
+                }
+
+                System.out.printf("| %-19s | %-20.2f |\n", timeString, dto.getTotalAmount());
             }
+
             System.out.println(line);
             System.out.printf("Trang %d/%d\n", currentPage, totalPages);
             System.out.println("(n) next, (p) pre, (e) exit:");

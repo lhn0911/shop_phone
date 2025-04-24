@@ -10,7 +10,7 @@ public interface InvoiceDao extends AppDao<Invoice> {
     Invoice findById(int id);
     boolean updateTotalAmount(int invoiceId);
     List<Invoice> findByTime(int date, int month, int year);
-    List<Invoice> revenueByDay();
-    List<Invoice> revenueByMonth();
-    List<Invoice> revenueByYear();
+    List<RevenueDTO> revenueByDay();
+    List<RevenueDTO> revenueByMonth();
+    List<RevenueDTO> revenueByYear();
 }

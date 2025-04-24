@@ -15,14 +15,14 @@ public class CustomerUI {
 
     public void CustomerMenu() {
         do{
-            System.out.println("========QUẢN LÝ KHÁCH HÀNG========");
-            System.out.println("1. Hiển thị danh sách khách hàng");
-            System.out.println("2. Thêm khách hàng");
-            System.out.println("3. Cập nhật khách hàng");
-            System.out.println("4. Xóa khách hàng");
-            System.out.println("5. Tìm kiếm khách hàng theo tên");
-            System.out.println("6. Quay lại menu chính");
-            System.out.println("===================================");
+            System.out.println("+---------QUẢN LÝ KHÁCH HÀNG---------+");
+            System.out.println("| 1. Hiển thị danh sách khách hàng   |");
+            System.out.println("| 2. Thêm khách hàng                 |");
+            System.out.println("| 3. Cập nhật khách hàng             |");
+            System.out.println("| 4. Xóa khách hàng                  |");
+            System.out.println("| 5. Tìm kiếm khách hàng theo tên    |");
+            System.out.println("| 6. Quay lại menu chính             |");
+            System.out.println("+------------------------------------+");
             int choice = ChoiceValidator.validateChoice(scanner);
             switch (choice) {
                 case 1:
@@ -175,33 +175,8 @@ public class CustomerUI {
     public void addCustomer(Scanner scanner) {
         int input = ChoiceValidator.validateInput(scanner, "Nhập vào số lượng cần thêm");
         for (int i = 0; i < input; i++) {
-            System.out.println("====== Thêm khách hàng ======");
-            String customerName = CustomerValidator.validateCustomerName(scanner, "Nhập tên khách hàng");
-            String customerPhone;
-            while (true) {
-                customerPhone = CustomerValidator.validatorPhone(scanner,"Nhập số điện thoại");
-                if (customerService.existsByPhone(customerPhone)) {
-                    System.err.println("Số điện thoại đã tồn tại, vui lòng nhập số khác.");
-                } else {
-                    break;
-                }
-            }
-            String customerEmail;
-            while(true){
-                customerEmail = CustomerValidator.validateEmail(scanner, "Nhập Email");
-                if (customerService.existsByEmail(customerEmail)) {
-                    System.err.println("Email đã tồn tại, vui lòng nhập email khác.");
-                } else {
-                    break;
-                }
-            }
-            String customerAddress = CustomerValidator.validateAddress(scanner, "Nhập địa chỉ");
-
             Customer c = new Customer();
-            c.setCustomer_name(customerName);
-            c.setCustomer_phone(customerPhone);
-            c.setCustomer_email(customerEmail);
-            c.setCustomer_address(customerAddress);
+            c.inputData(scanner);
 
             if (customerService.save(c)) {
                 System.out.println("Thêm khách hàng thành công!");
@@ -211,6 +186,7 @@ public class CustomerUI {
         }
         displayListCustomer();
     }
+
 
     public void displayListCustomer() {
         System.out.println("====DANH SÁCH KHÁCH HÀNG====");

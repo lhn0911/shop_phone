@@ -1,6 +1,14 @@
 package ra.edu.business.model.customer;
 
-public class Customer {
+import ra.edu.business.model.IApp;
+import ra.edu.business.service.customer.CustomerService;
+import ra.edu.business.service.customer.CustomerServiceImp;
+import ra.edu.validate.CustomerValidator;
+
+import java.util.Scanner;
+
+public class Customer implements IApp {
+    private final CustomerService customerService = new CustomerServiceImp();
     private int Customer_id;
     private String Customer_name;
     private String Customer_phone;
@@ -68,4 +76,31 @@ public class Customer {
                 ", Customer_address='" + Customer_address + '\'' +
                 '}';
     }
+
+    @Override
+    public void inputData(Scanner scanner) {
+        System.out.println("+------------ Nhập thông tin khách hàng ------------+");
+        this.Customer_name = CustomerValidator.validateCustomerName(scanner, "Nhập tên khách hàng");
+
+        while (true) {
+            this.Customer_phone = CustomerValidator.validatorPhone(scanner, "Nhập số điện thoại");
+            if (customerService.existsByPhone(this.Customer_phone)) {
+                System.err.println("Số điện thoại đã tồn tại, vui lòng nhập số khác.");
+            } else {
+                break;
+            }
+        }
+
+        while (true) {
+            this.Customer_email = CustomerValidator.validateEmail(scanner, "Nhập email");
+            if (customerService.existsByEmail(this.Customer_email)) {
+                System.err.println("Email đã tồn tại, vui lòng nhập email khác.");
+            } else {
+                break;
+            }
+        }
+
+        this.Customer_address = CustomerValidator.validateAddress(scanner, "Nhập địa chỉ");
+    }
+
 }

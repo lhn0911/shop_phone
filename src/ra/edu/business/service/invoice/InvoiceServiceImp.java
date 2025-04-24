@@ -2,6 +2,7 @@ package ra.edu.business.service.invoice;
 
 import ra.edu.business.dao.invoice.InvoiceDao;
 import ra.edu.business.dao.invoice.InvoiceDaoImp;
+import ra.edu.business.dao.invoice.RevenueDTO;
 import ra.edu.business.model.invoice.Invoice;
 
 import java.util.List;
@@ -53,17 +54,17 @@ public class InvoiceServiceImp implements InvoiceService{
     }
 
     @Override
-    public List<Invoice> revenueByDay() {
+    public List<RevenueDTO> revenueByDay() {
         return invoiceDao.revenueByDay();
     }
 
     @Override
-    public List<Invoice> revenueByMonth() {
+    public List<RevenueDTO> revenueByMonth() {
         return invoiceDao.revenueByMonth();
     }
 
     @Override
-    public List<Invoice> revenueByYear() {
+    public List<RevenueDTO> revenueByYear() {
         return invoiceDao.revenueByYear();
     }
 }

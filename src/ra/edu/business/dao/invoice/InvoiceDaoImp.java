@@ -120,8 +120,8 @@ public class InvoiceDaoImp implements InvoiceDao{
     }
 
     @Override
-    public List<Invoice> revenueByDay() {
-        List<Invoice> list = new ArrayList<>();
+    public List<RevenueDTO> revenueByDay() {
+        List<RevenueDTO> list = new ArrayList<>();
         Connection conn = null;
         CallableStatement callSt = null;
         try{
@@ -129,10 +129,10 @@ public class InvoiceDaoImp implements InvoiceDao{
             callSt = conn.prepareCall("{call revenue_by_day()}");
             ResultSet rs = callSt.executeQuery();
             while (rs.next()) {
-                Invoice invoice = new Invoice();
-                invoice.setCreated_at(rs.getDate("created_at").toLocalDate());
-                invoice.setTotal_amount(rs.getDouble("total_amount"));
-                list.add(invoice);
+                RevenueDTO dto = new RevenueDTO();
+                dto.setDate(rs.getDate("created_at").toLocalDate());
+                dto.setTotalAmount(rs.getDouble("total_amount"));
+                list.add(dto);
             }
         }catch(SQLException e){
             e.fillInStackTrace();
@@ -145,8 +145,8 @@ public class InvoiceDaoImp implements InvoiceDao{
     }
 
     @Override
-    public List<Invoice> revenueByMonth() {
-        List<Invoice> list = new ArrayList<>();
+    public List<RevenueDTO> revenueByMonth() {
+        List<RevenueDTO> list = new ArrayList<>();
         Connection conn = null;
         CallableStatement callSt = null;
         try{
@@ -154,10 +154,11 @@ public class InvoiceDaoImp implements InvoiceDao{
             callSt = conn.prepareCall("{call revenue_by_month()}");
             ResultSet rs = callSt.executeQuery();
             while (rs.next()) {
-                Invoice invoice = new Invoice();
-                invoice.setCreated_at(rs.getDate("created_at").toLocalDate());
-                invoice.setTotal_amount(rs.getDouble("total_amount"));
-                list.add(invoice);
+                RevenueDTO dto = new RevenueDTO();
+                dto.setMonth(rs.getInt("month"));
+                dto.setYear(rs.getInt("year"));
+                dto.setTotalAmount(rs.getDouble("total_amount"));
+                list.add(dto);
             }
         }catch(SQLException e){
             e.fillInStackTrace();
@@ -170,8 +171,8 @@ public class InvoiceDaoImp implements InvoiceDao{
     }
 
     @Override
-    public List<Invoice> revenueByYear() {
-        List<Invoice> list = new ArrayList<>();
+    public List<RevenueDTO> revenueByYear() {
+        List<RevenueDTO> list = new ArrayList<>();
         Connection conn = null;
         CallableStatement callSt = null;
         try{
@@ -179,10 +180,10 @@ public class InvoiceDaoImp implements InvoiceDao{
             callSt = conn.prepareCall("{call revenue_by_year()}");
             ResultSet rs = callSt.executeQuery();
             while (rs.next()) {
-                Invoice invoice = new Invoice();
-                invoice.setCreated_at(rs.getDate("created_at").toLocalDate());
-                invoice.setTotal_amount(rs.getDouble("total_amount"));
-                list.add(invoice);
+                RevenueDTO dto = new RevenueDTO();
+                dto.setYear(rs.getInt("year"));
+                dto.setTotalAmount(rs.getDouble("total_amount"));
+                list.add(dto);
             }
         }catch(SQLException e){
             e.fillInStackTrace();

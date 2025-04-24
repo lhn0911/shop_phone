@@ -1,6 +1,10 @@
 package ra.edu.business.model.account;
 
-public class Account {
+import ra.edu.business.model.IApp;
+
+import java.util.Scanner;
+
+public class Account implements IApp {
     private int id;
     private String username;
     private String password;
@@ -37,6 +41,14 @@ public class Account {
     public void setPassword(String password) {
         this.password = password;
     }
+    @Override
+    public void inputData(Scanner scanner) {
+        System.out.print("Tên đăng nhập: ");
+        this.username = scanner.nextLine();
+
+        System.out.print("Mật khẩu: ");
+        this.password = scanner.nextLine();
+    }
 
     @Override
     public String toString() {
@@ -46,4 +58,6 @@ public class Account {
                 ", password='" + password + '\'' +
                 '}';
     }
+
+
 }

@@ -1,5 +1,6 @@
 package ra.edu.business.service.invoice;
 
+import ra.edu.business.dao.invoice.RevenueDTO;
 import ra.edu.business.model.invoice.Invoice;
 import ra.edu.business.service.AppService;
 
@@ -10,7 +11,7 @@ public interface InvoiceService extends AppService<Invoice> {
     boolean updateTotalAmount(int invoiceId);
     List<Invoice> findByCustomerName(String name);
     List<Invoice> findByTime(int date, int month, int year);
-    List<Invoice> revenueByDay();
-    List<Invoice> revenueByMonth();
-    List<Invoice> revenueByYear();
+    List<RevenueDTO> revenueByDay();
+    List<RevenueDTO> revenueByMonth();
+    List<RevenueDTO> revenueByYear();
 }

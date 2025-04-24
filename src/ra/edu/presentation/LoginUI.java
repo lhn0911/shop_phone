@@ -12,18 +12,18 @@ public class LoginUI {
 
     public Account showLogin() {
         System.out.println("=== ĐĂNG NHẬP HỆ THỐNG ===");
-        System.out.print("Tên đăng nhập: ");
-        String username = scanner.nextLine();
+        Account account = new Account();
+        account.inputData(scanner);
 
-        System.out.print("Mật khẩu: ");
-        String password = scanner.nextLine();
+        Account result = accountService.login(account.getUsername(), account.getPassword());
 
-        Account account = accountService.login(username, password);
-
-        if (account != null) {
+        if (result != null) {
             System.out.println("Đăng nhập thành công!");
+        } else {
+            System.out.println("Tên đăng nhập hoặc mật khẩu không đúng.");
         }
 
-        return account;
+        return result;
     }
+
 }

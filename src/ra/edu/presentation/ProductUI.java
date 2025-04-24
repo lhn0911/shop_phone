@@ -16,17 +16,17 @@ public class ProductUI {
 
     public void productMenu() {
         do {
-            System.out.println("=======QUẢN LÝ SẢN PHẨM =====");
-            System.out.println("1. Hiển thị danh sách sản phẩm");
-            System.out.println("2. Thêm sản phẩm mới");
-            System.out.println("3. Cập nhật thông tin sản phẩm");
-            System.out.println("4. Xóa sản phẩm theo ID");
-            System.out.println("5. Tìm kiếm theo tên");
-            System.out.println("6. Tìm kiếm theo brand");
-            System.out.println("7. Tìm kiếm theo khoảng giá");
-            System.out.println("8. Tìm kiếm theo tồn kho");
-            System.out.println("9. Quay lại menu chính");
-            System.out.println("=============================");
+            System.out.println("+--------QUẢN LÝ SẢN PHẨM -------+");
+            System.out.println("| 1. Hiển thị danh sách sản phẩm |");
+            System.out.println("| 2. Thêm sản phẩm mới           |");
+            System.out.println("| 3. Cập nhật thông tin sản phẩm |");
+            System.out.println("| 4. Xóa sản phẩm theo ID        |");
+            System.out.println("| 5. Tìm kiếm theo tên           |");
+            System.out.println("| 6. Tìm kiếm theo brand         |");
+            System.out.println("| 7. Tìm kiếm theo khoảng giá    |");
+            System.out.println("| 8. Tìm kiếm theo tồn kho       |");
+            System.out.println("| 9. Quay lại menu chính         |");
+            System.out.println("+--------------------------------+");
             int choice = ChoiceValidator.validateChoice(scanner);
             switch (choice) {
                 case 1:
@@ -140,7 +140,6 @@ public class ProductUI {
 
     public void updateProduct(Scanner scanner) {
         int id = ChoiceValidator.validateInput(scanner, "Nhập id cần sửa");
-
         Product oldProduct = productService.findById(id);
         if (oldProduct == null) {
             System.err.println("Không tìm thấy sản phẩm với ID: " + id);
@@ -166,7 +165,6 @@ public class ProductUI {
             System.out.println(line);
             System.out.printf("| %-3s | %-25s | %-38s |\n", "5", "Lưu và quay lại", "");
             System.out.println(line);
-
             int choice = ChoiceValidator.validateChoice(scanner);
             switch (choice) {
                 case 1:

@@ -25,9 +25,7 @@ public class InvoicedtUI {
             System.out.println("\n--- QUẢN LÝ CHI TIẾT HÓA ĐƠN #" + invoice.getInvoice_id() + " ---");
             System.out.println("1. Xem chi tiết hóa đơn");
             System.out.println("2. Thêm sản phẩm vào hóa đơn");
-            System.out.println("3. Cập nhật hóa đơn");
-            System.out.println("4. Xóa hóa đơn");
-            System.out.println("5. Quay lại");
+            System.out.println("3. Quay lại");
             System.out.println("------------------------------------");
             int choice = ChoiceValidator.validateChoice(scanner);
             switch (choice) {
@@ -38,11 +36,6 @@ public class InvoicedtUI {
                     addProductToInvoice(invoice.getInvoice_id());
                     break;
                 case 3:
-                    break;
-                case 4:
-
-                    break;
-                case 5:
                     return;
                 default:
                     System.out.println("Lựa chọn không hợp lệ!");
@@ -50,34 +43,26 @@ public class InvoicedtUI {
         } while (true);
     }
 
+//    private void updateInvoice(int invoiceId) {
+//        System.out.println("chx có cập nhật");
+//    }
+
     public void addProductToInvoice(int invoiceId) {
-        List<Product> products = productService.findAll();
-        if (products.isEmpty()) {
-            System.out.println("Không có sản phẩm trong hệ thống.");
-            return;
-        }
-
         while (true) {
-            System.out.println("----- DANH SÁCH SẢN PHẨM -----");
-            System.out.printf("%-5s %-20s %-10s%n", "ID", "Tên sản phẩm", "Giá");
-            for (Product product : products) {
-                System.out.printf("%-5d %-20s %-10.2f%n", product.getProduct_id(), product.getProduct_name(), product.getProduct_price());
-            }
+            System.out.println("Thêm sản phẩm vào hóa đơn (0 để thoát).");
+            System.out.print("Tiếp tục thêm? (y/n): ");
+            String confirm = scanner.nextLine().trim().toLowerCase();
+            if (!confirm.equals("y")) break;
 
-            System.out.print("Nhập ID sản phẩm muốn thêm (0 để thoát): ");
-            int productId = ChoiceValidator.validateChoice(scanner);
-            if (productId == 0) break;
+            InvoiceDetail detail = new InvoiceDetail();
+            detail.setInvoice_id(invoiceId);
+            detail.inputData(scanner);
 
-            Product selectedProduct = productService.findById(productId);
-            if (selectedProduct == null) {
-                System.out.println("Sản phẩm không tồn tại.");
+            if (detail.getProduct_id() == 0 || detail.getQuantity() == 0) {
+                System.out.println("Thông tin sản phẩm không hợp lệ. Hủy thao tác.");
                 continue;
             }
 
-            int quantity = ChoiceValidator.validateInput(scanner, "Nhập số lượng sản phẩm: ");
-            double unitPrice = selectedProduct.getProduct_price();
-
-            InvoiceDetail detail = new InvoiceDetail(invoiceId, productId, quantity, unitPrice);
             boolean saved = invoicedtService.save(detail);
             if (saved) {
                 System.out.println("Đã thêm sản phẩm vào hóa đơn!");
@@ -90,6 +75,8 @@ public class InvoicedtUI {
             }
         }
     }
+
+
 
     public void viewInvoiceDetail(int invoiceId) {
         System.out.println("\n=== CHI TIẾT HÓA ĐƠN #" + invoiceId + " ===");
