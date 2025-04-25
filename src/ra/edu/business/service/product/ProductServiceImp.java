@@ -64,4 +64,9 @@ public class ProductServiceImp implements ProductService {
         return productDao.searchByStock(minStock, maxStock);
     }
 
+    @Override
+    public List<Product> searchByName(String name) {
+        return productDao.searchByName(name);
+    }
+
 }

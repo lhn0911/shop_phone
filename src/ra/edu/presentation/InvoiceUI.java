@@ -190,7 +190,17 @@ public class InvoiceUI {
             }
 
             System.out.printf("Trang %d/%d\n", currentPage, totalPages);
-            System.out.println("(n) next, (p) pre, (e) exit:");
+
+            if (currentPage == 1 && totalPages == 1) {
+                System.out.println("(e) exit:");
+            } else if (currentPage == 1) {
+                System.out.println("(n) next, (e) exit:");
+            } else if (currentPage == totalPages) {
+                System.out.println("(p) pre, (e) exit:");
+            } else {
+                System.out.println("(n) next, (p) pre, (e) exit:");
+            }
+
             String input = scanner.nextLine().trim().toLowerCase();
 
             if (input.equals("n")) {

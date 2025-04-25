@@ -58,7 +58,6 @@ public class CustomerUI {
             System.out.println("Khách hàng có tên \"" + name + "\" là:");
             printCustomerListPaginated(resultList);
         }
-
     }
 
     public void deleteCustomer(Scanner scanner) {
@@ -85,7 +84,6 @@ public class CustomerUI {
         } else {
             System.out.println("Không tìm thấy khách hàng với ID đã nhập.");
         }
-
     }
 
     public void updateCustomer(Scanner scanner) {
@@ -106,15 +104,17 @@ public class CustomerUI {
             System.out.println(line);
             System.out.printf("| %-1s | %-25s | %-38s |\n", "STT", "Thông tin", "Giá trị hiện tại");
             System.out.println(line);
-            System.out.printf("| %-2s | %-25s | %-38s |\n", "1", "Họ tên", oldCustomer.getCustomer_name());
+            System.out.printf("| %-3s | %-25s | %-38s |\n", "1", "Họ tên", oldCustomer.getCustomer_name());
             System.out.println(line);
-            System.out.printf("| %-2s | %-25s | %-38s |\n", "2", "Số điện thoại", oldCustomer.getCustomer_phone());
+            System.out.printf("| %-3s | %-25s | %-38s |\n", "2", "Số điện thoại", oldCustomer.getCustomer_phone());
             System.out.println(line);
-            System.out.printf("| %-2s | %-25s | %-38s |\n", "3", "Email", oldCustomer.getCustomer_email());
+            System.out.printf("| %-3s | %-25s | %-38s |\n", "3", "Email", oldCustomer.getCustomer_email());
             System.out.println(line);
-            System.out.printf("| %-2s | %-25s | %-38s |\n", "4", "Địa chỉ", oldCustomer.getCustomer_address());
+            System.out.printf("| %-3s | %-25s | %-38s |\n", "4", "Địa chỉ", oldCustomer.getCustomer_address());
             System.out.println(line);
-            System.out.printf("| %-2s | %-25s | %-38s |\n", "5", "Lưu và quay lại", "");
+            System.out.printf("| %-3s | %-25s | %-38s |\n", "5", "Lưu", "");
+            System.out.println(line);
+            System.out.printf("| %-3s | %-25s | %-38s |\n", "6", "Quay Lại","");
             System.out.println(line);
 
             int choice = ChoiceValidator.validateChoice(scanner);
@@ -137,17 +137,17 @@ public class CustomerUI {
                     }
                     break;
                 case 3:
-                while (true) {
-                    String newEmail = CustomerValidator.validateEmail(scanner, "Nhập email mới:");
-                    if (!newEmail.equalsIgnoreCase(oldCustomer.getCustomer_email()) && customerService.existsByEmail(newEmail)) {
-                        System.err.println("Tên sản phẩm đã tồn tại, vui lòng nhập tên khác.");
-                    } else {
-                        oldCustomer.setCustomer_email(newEmail);
-                        isUpdated = true;
-                        break;
+                    while (true) {
+                        String newEmail = CustomerValidator.validateEmail(scanner, "Nhập email mới:");
+                        if (!newEmail.equalsIgnoreCase(oldCustomer.getCustomer_email()) && customerService.existsByEmail(newEmail)) {
+                            System.err.println("Tên sản phẩm đã tồn tại, vui lòng nhập tên khác.");
+                        } else {
+                            oldCustomer.setCustomer_email(newEmail);
+                            isUpdated = true;
+                            break;
+                        }
                     }
-                }
-                break;
+                    break;
                 case 4:
                     String newAddress = CustomerValidator.validateAddress(scanner, "Nhập địa chỉ mới:");
                     oldCustomer.setCustomer_address(newAddress);
@@ -165,11 +165,19 @@ public class CustomerUI {
                         System.out.println("Không có thay đổi nào được thực hiện.");
                     }
                     return;
+                case 6:
+                    isUpdated = false;
+                    if (isUpdated) {
+                        System.out.println("Các thay đổi đã bị hủy. Không có dữ liệu nào được cập nhật.");
+                    } else {
+                        System.out.println("Quay lại mà không có thay đổi nào.");
+                    }
+                    return;
+
                 default:
                     System.err.println("Lựa chọn không hợp lệ.");
             }
         } while (true);
-
     }
 
     public void addCustomer(Scanner scanner) {
@@ -186,7 +194,6 @@ public class CustomerUI {
         }
         displayListCustomer();
     }
-
 
     public void displayListCustomer() {
         System.out.println("====DANH SÁCH KHÁCH HÀNG====");
@@ -227,7 +234,17 @@ public class CustomerUI {
             }
 
             System.out.printf("Trang %d/%d\n", currentPage, totalPages);
-            System.out.println("(n) next, (p) pre, (e) exit:");
+
+            if (currentPage == 1 && totalPages == 1) {
+                System.out.println("(e) exit:");
+            } else if (currentPage == 1) {
+                System.out.println("(n) next, (e) exit:");
+            } else if (currentPage == totalPages) {
+                System.out.println("(p) pre, (e) exit:");
+            } else {
+                System.out.println("(n) next, (p) pre, (e) exit:");
+            }
+
             String input = scanner.nextLine().trim().toLowerCase();
 
             if (input.equals("n")) {
@@ -249,6 +266,4 @@ public class CustomerUI {
             }
         }
     }
-
-
 }

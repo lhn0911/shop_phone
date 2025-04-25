@@ -150,6 +150,33 @@ public class ProductDaoImp implements ProductDao {
     }
 
     @Override
+    public List<Product> searchByName(String name) {
+        List<Product> list = new ArrayList<>();
+        Connection conn = null;
+        CallableStatement callSt = null;
+        try {
+            conn = ConnectionDB.openConnection();
+            callSt = conn.prepareCall("{call search_product_byName(?)}");
+            callSt.setString(1, name);
+            ResultSet rs = callSt.executeQuery();
+            while (rs.next()) {
+                Product product = new Product();
+                product.setProduct_id(rs.getInt("product_id"));
+                product.setProduct_name(rs.getString("product_name"));
+                product.setProduct_brand(rs.getString("product_brand"));
+                product.setProduct_price(rs.getDouble("product_price"));
+                product.setProduct_stock(rs.getInt("product_stock"));
+                list.add(product);
+            }
+        } catch (SQLException | RuntimeException e) {
+            e.printStackTrace();
+        } finally {
+            ConnectionDB.closeConnection(conn, callSt);
+        }
+        return list;
+    }
+
+    @Override
     public List<Product> findAll() {
         List<Product> list = new ArrayList<>();
         Connection conn = null;

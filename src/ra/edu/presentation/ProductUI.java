@@ -63,7 +63,7 @@ public class ProductUI {
 
     public void searByName(Scanner scanner) {
         String name = ProductValidator.validateProductName(scanner, "Nhập tên sản phẩm muốn tìm");
-        List<Product> resultList = productService.findByName(name);
+        List<Product> resultList = productService.searchByName(name);
         if (resultList.isEmpty()) {
             System.out.println("Không tìm thấy sản phẩm nào thuộc tên \"" + name + "\".");
         } else {
@@ -163,7 +163,9 @@ public class ProductUI {
             System.out.println(line);
             System.out.printf("| %-3s | %-25s | %-38d |\n", "4", "Tồn kho", oldProduct.getProduct_stock());
             System.out.println(line);
-            System.out.printf("| %-3s | %-25s | %-38s |\n", "5", "Lưu và quay lại", "");
+            System.out.printf("| %-3s | %-25s | %-38s |\n", "5", "Lưu", "");
+            System.out.println(line);
+            System.out.printf("| %-3s | %-25s | %-38s |\n", "6", "Quay Lại","");
             System.out.println(line);
             int choice = ChoiceValidator.validateChoice(scanner);
             switch (choice) {
@@ -204,6 +206,14 @@ public class ProductUI {
                         }
                     } else {
                         System.out.println("Không có thay đổi nào được thực hiện.");
+                    }
+                    return;
+                case 6:
+                    isUpdated = false;
+                    if (isUpdated) {
+                        System.out.println("Các thay đổi đã bị hủy. Không có dữ liệu nào được cập nhật.");
+                    } else {
+                        System.out.println("Quay lại mà không có thay đổi nào.");
                     }
                     return;
                 default:
@@ -282,7 +292,17 @@ public class ProductUI {
             }
 
             System.out.printf("Trang %d/%d\n", currentPage, totalPages);
-            System.out.println("(n) next, (p) pre, (e) exit:");
+
+            if (currentPage == 1 && totalPages == 1) {
+                System.out.println("(e) exit:");
+            } else if (currentPage == 1) {
+                System.out.println("(n) next, (e) exit:");
+            } else if (currentPage == totalPages) {
+                System.out.println("(p) pre, (e) exit:");
+            } else {
+                System.out.println("(n) next, (p) pre, (e) exit:");
+            }
+
             String input = scanner.nextLine().trim().toLowerCase();
 
             if (input.equals("n")) {

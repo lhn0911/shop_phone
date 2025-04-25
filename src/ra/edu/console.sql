@@ -47,7 +47,7 @@ delimiter //
 
 create procedure get_all_product()
 begin
-select * from product where product_status = true;
+select * from product where product_status = true and product_stock > 0;
 end;
 
 delimiter //
@@ -68,6 +68,16 @@ begin
 select *
 from product
 where product_name = p_product_name
+  and product_status = true;
+end;
+delimiter //
+-- ===
+delimiter //
+create procedure search_product_byName(in p_product_name varchar(150))
+begin
+select *
+from product
+where product_name  like concat('%',p_product_name,'%')
   and product_status = true;
 end;
 delimiter //
@@ -363,10 +373,32 @@ create procedure insert_invoice_detail(
     in c_unit_price decimal(12,2)
 )
 begin
-insert into  invoice_details (invoice_id, product_id, quantity, unit_price)
-values (c_invoice_id, c_product_id, c_quantity, c_unit_price);
+    declare v_stock int;
+
+    -- Lấy số lượng tồn kho hiện tại của sản phẩm
+select product_stock into v_stock from product where product_id = c_product_id;
+
+-- Kiểm tra tồn kho
+if v_stock is null then
+        signal sqlstate '45000'
+            set message_text = 'sản phẩm không tồn tại';
+    elseif c_quantity > v_stock then
+        signal sqlstate '45000'
+            set message_text = 'số lượng vượt quá tồn kho';
+else
+        -- Insert vào invoice_details nếu đủ hàng
+        insert into invoice_details (invoice_id, product_id, quantity, unit_price)
+        values (c_invoice_id, c_product_id, c_quantity, c_unit_price);
+
+        -- Cập nhật lại tồn kho
+update product
+set product_stock = product_stock - c_quantity
+where product_id = c_product_id;
+end if;
 end;
+
 delimiter //
+
 -- ===
 
 -- ===
@@ -377,40 +409,38 @@ select * from invoice_details;
 end;
 delimiter //
 -- ===
-DELIMITER //
-CREATE PROCEDURE revenue_by_day()
-BEGIN
-SELECT DATE(created_at) AS day,
-    SUM(total_amount) AS total_revenue
-FROM invoice
-GROUP BY DATE(created_at)
-ORDER BY day;
-END;
-//
-DELIMITER ;
+delimiter //
+create procedure revenue_by_day()
+begin
+select DATE(created_at)as created_at,
+    SUM(total_amount)as total_amount
+from invoice
+group by DATE(created_at)
+order by SUM(total_amount);
+end;
+delimiter //
 -- ===
-DELIMITER //
-CREATE PROCEDURE revenue_by_month()
-BEGIN
-SELECT YEAR(created_at) AS year,
-    MONTH(created_at) AS month,
-    SUM(total_amount) AS total_revenue
-FROM invoice
-GROUP BY YEAR(created_at), MONTH(created_at)
-ORDER BY year, month;
-END;
-//
-DELIMITER ;
+delimiter //
+create procedure revenue_by_month()
+begin
+select MONTH(created_at) AS month,
+    YEAR(created_at) AS year,
+    SUM(total_amount) AS total_amount
+from invoice
+group by MONTH(created_at), YEAR(created_at)
+order by YEAR(created_at), MONTH(created_at);
+end;
+delimiter //
 -- ===
-DELIMITER //
-CREATE PROCEDURE revenue_by_year()
-BEGIN
-SELECT YEAR(created_at) AS year,
-    SUM(total_amount) AS total_revenue
-FROM invoice
-GROUP BY YEAR(created_at)
-ORDER BY year;
-END;
-//
-DELIMITER ;
+delimiter //
+create procedure revenue_by_year()
+begin
+select YEAR(created_at) as year,
+    SUM(total_amount) as total_amount
+from invoice
+group by  YEAR(created_at)
+order by  SUM(total_amount);
+end;
+delimiter //
 -- ===
+CALL revenue_by_day();

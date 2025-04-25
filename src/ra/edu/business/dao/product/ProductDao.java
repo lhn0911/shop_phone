@@ -11,5 +11,5 @@ public interface ProductDao extends AppDao<Product> {
     List<Product> searchByBrand(String brand);
     List<Product> searchByPrice(double minPrice, double maxPrice);
     List<Product> searchByStock(int minStock, int maxStock);
-
+    List<Product> searchByName(String name);
 }

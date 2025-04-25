@@ -50,10 +50,6 @@ public class InvoicedtUI {
     public void addProductToInvoice(int invoiceId) {
         while (true) {
             System.out.println("Thêm sản phẩm vào hóa đơn (0 để thoát).");
-            System.out.print("Tiếp tục thêm? (y/n): ");
-            String confirm = scanner.nextLine().trim().toLowerCase();
-            if (!confirm.equals("y")) break;
-
             InvoiceDetail detail = new InvoiceDetail();
             detail.setInvoice_id(invoiceId);
             detail.inputData(scanner);
@@ -123,7 +119,17 @@ public class InvoicedtUI {
             System.out.printf("TỔNG TIỀN: %.2f%n", totalAmount);
 
             System.out.printf("Trang %d/%d\n", currentPage, totalPages);
-            System.out.println("(n) next, (p) pre, (e) exit:");
+
+            if (currentPage == 1 && totalPages == 1) {
+                System.out.println("(e) exit:");
+            } else if (currentPage == 1) {
+                System.out.println("(n) next, (e) exit:");
+            } else if (currentPage == totalPages) {
+                System.out.println("(p) pre, (e) exit:");
+            } else {
+                System.out.println("(n) next, (p) pre, (e) exit:");
+            }
+
             String input = scanner.nextLine().trim().toLowerCase();
 
             if (input.equals("n")) {
