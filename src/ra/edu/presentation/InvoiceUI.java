@@ -2,6 +2,7 @@ package ra.edu.presentation;
 
 import ra.edu.business.model.customer.Customer;
 import ra.edu.business.model.invoice.Invoice;
+import ra.edu.business.model.product.Product;
 import ra.edu.business.service.customer.CustomerService;
 import ra.edu.business.service.customer.CustomerServiceImp;
 import ra.edu.business.service.invoice.InvoiceService;
@@ -112,15 +113,19 @@ public class InvoiceUI {
             if (result.isEmpty()) {
                 System.out.println("Không tìm thấy hóa đơn nào phù hợp.");
             } else {
-                System.out.println("====== KẾT QUẢ TÌM KIẾM ======");
-                System.out.printf("%-5s %-15s %-20s %-15s%n", "ID", "Mã KH", "Ngày tạo", "Tổng tiền");
+                System.out.println("\n============== KẾT QUẢ TÌM KIẾM ==============");
+                System.out.println("+------+------------+---------------------+--------------+");
+                System.out.printf("| %-4s | %-10s | %-19s | %-12s |\n", "ID", "Mã KH", "Ngày tạo", "Tổng tiền");
+                System.out.println("+------+------------+---------------------+--------------+");
                 for (Invoice invoice : result) {
-                    System.out.printf("%-5d %-15s %-20s %-15.2f%n",
+                    System.out.printf("| %-4d | %-10s | %-19s | %-12.2f |\n",
                             invoice.getInvoice_id(),
                             invoice.getCustomer_id(),
                             invoice.getCreated_at(),
                             invoice.getTotal_amount());
                 }
+                System.out.println("+------+------------+---------------------+--------------+\n");
+
             }
         } while (true);
     }
@@ -161,10 +166,18 @@ public class InvoiceUI {
         }
     }
 
-
     public void displayListInvoice() {
-        System.out.println("\n====== DANH SÁCH HÓA ĐƠN ======");
-        List<Invoice> invoices = invoiceService.findAll();
+        List<Invoice> invoice = invoiceService.findAll();
+        printProductListPaginated(invoice);
+    }
+    public void printProductListPaginated(List<Invoice> invoices) {
+        if(invoices.isEmpty()) {
+            System.out.println("Không có hoá đơn nào");
+            return;
+        }
+
+        System.out.println("+--------------- DANH SÁCH HÓA ĐƠN --------------+");
+        invoices = invoiceService.findAll();
         int totalPages = (int) Math.ceil((double) invoices.size() / PAGE_SIZE);
         int currentPage = 1;
 

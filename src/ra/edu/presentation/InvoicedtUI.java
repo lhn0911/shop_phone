@@ -11,6 +11,7 @@ import ra.edu.business.service.product.ProductService;
 import ra.edu.business.service.product.ProductServiceImp;
 import ra.edu.validate.ChoiceValidator;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Scanner;
 
@@ -24,18 +25,18 @@ public class InvoicedtUI {
         do {
             System.out.println("\n--- QUẢN LÝ CHI TIẾT HÓA ĐƠN #" + invoice.getInvoice_id() + " ---");
             System.out.println("1. Xem chi tiết hóa đơn");
-            System.out.println("2. Thêm sản phẩm vào hóa đơn");
-            System.out.println("3. Quay lại");
+//            System.out.println("2. Thêm sản phẩm vào hóa đơn");
+            System.out.println("2. Quay lại");
             System.out.println("------------------------------------");
             int choice = ChoiceValidator.validateChoice(scanner);
             switch (choice) {
                 case 1:
                     viewInvoiceDetail(invoice.getInvoice_id());
                     break;
+//                case 2:
+//                    addProductToInvoice(invoice.getInvoice_id());
+//                    break;
                 case 2:
-                    addProductToInvoice(invoice.getInvoice_id());
-                    break;
-                case 3:
                     return;
                 default:
                     System.out.println("Lựa chọn không hợp lệ!");
@@ -49,28 +50,38 @@ public class InvoicedtUI {
 
     public void addProductToInvoice(int invoiceId) {
         while (true) {
-            System.out.println("Thêm sản phẩm vào hóa đơn (0 để thoát).");
+            System.out.println("Chọn sản phẩm.");
             InvoiceDetail detail = new InvoiceDetail();
             detail.setInvoice_id(invoiceId);
             detail.inputData(scanner);
 
+
             if (detail.getProduct_id() == 0 || detail.getQuantity() == 0) {
-                System.out.println("Thông tin sản phẩm không hợp lệ. Hủy thao tác.");
+                System.out.println("Thông tin sản phẩm không hợp lệ. Vui lòng thử lại.");
                 continue;
             }
 
             boolean saved = invoicedtService.save(detail);
             if (saved) {
                 System.out.println("Đã thêm sản phẩm vào hóa đơn!");
+
                 boolean updated = invoiceService.updateTotalAmount(invoiceId);
                 if (updated) {
-                    System.out.println("Tổng tiền hóa đơn sau khi cập nhật: " + invoiceService.findById(invoiceId).getTotal_amount());
+                    System.out.println("Tổng tiền hóa đơn sau khi cập nhật: " +
+                            invoiceService.findById(invoiceId).getTotal_amount());
+                }
+
+                System.out.println("Bạn có muốn thêm nữa không? (1. Có / 0. Không)");
+                int input = ChoiceValidator.validateChoice(scanner);
+                if (input == 0) {
+                    break;
                 }
             } else {
                 System.out.println("Thêm sản phẩm vào hóa đơn thất bại!");
             }
         }
     }
+
 
 
 
@@ -87,7 +98,7 @@ public class InvoicedtUI {
         int currentPage = 1;
 
         String line = "+-----+-------+---------------------+------------+-----------------+-----------------+";
-        String header = String.format("| %-5s | %-5s | %-20s | %-10s | %-15s | %-15s |",
+        String header = String.format("| %-3s | %-3s | %-20s | %-10s | %-15s | %-15s |",
                 "ID", "Mã DH", "Tên sản phẩm", "Số lượng", "Đơn giá", "Thành tiền");
 
         while (true) {
@@ -103,7 +114,7 @@ public class InvoicedtUI {
                 Product product = productService.findById(detail.getProduct_id());
                 String productName = product != null ? product.getProduct_name() : "Không xác định";
 
-                System.out.printf("| %-5d | %-5d | %-20s | %-10d | %-15.2f | %-15.2f |\n",
+                System.out.printf("| %-3d | %-5d | %-20s | %-10d | %-15.2f | %-15.2f |\n",
                         detail.getInvoicedt_id(),
                         detail.getInvoice_id(),
                         productName,

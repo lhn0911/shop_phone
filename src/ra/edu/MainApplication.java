@@ -37,12 +37,13 @@ public class MainApplication {
                 }
             } else {
                 System.out.println("Xin chào, "+currentAccount.getUsername());
-                System.out.println("=========Menu chính========");
-                System.out.println("1. Quản lý sản phẩm điện thoại");
-                System.out.println("2. Quản lý khách hàng");
-                System.out.println("3. Quản lý hóa đơn");
-                System.out.println("4. Thống kê doanh thu");
-                System.out.println("5. Đăng xuất");
+                System.out.println("+-----------Menu chính-----------+");
+                System.out.println("| 1. Quản lý sản phẩm điện thoại |");
+                System.out.println("| 2. Quản lý khách hàng          |");
+                System.out.println("| 3. Quản lý hóa đơn             |");
+                System.out.println("| 4. Thống kê doanh thu          |");
+                System.out.println("| 5. Đăng xuất                   |");
+                System.out.println("+--------------------------------+");
                 int choice = ChoiceValidator.validateChoice(scanner);
                 switch (choice) {
                     case 1:

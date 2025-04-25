@@ -196,10 +196,8 @@ public class CustomerUI {
     }
 
     public void displayListCustomer() {
-        System.out.println("====DANH SÁCH KHÁCH HÀNG====");
         List<Customer> customerList = customerService.findAll();
         printCustomerListPaginated(customerList);
-        System.out.println("============================");
     }
 
     public void printCustomerListPaginated(List<Customer> customerList) {
@@ -207,11 +205,11 @@ public class CustomerUI {
             System.out.println("Không có khách hàng nào để hiển thị.");
             return;
         }
+        System.out.println("+----------------------------------------------- DANH SÁCH KHÁCH HÀNG -----------------------------------------------+");
 
         final int PAGE_SIZE = 5;
         int totalPages = (int) Math.ceil((double) customerList.size() / PAGE_SIZE);
         int currentPage = 1;
-
         String line = "+-----+---------------------------+----------------------+------------------------------+------------------------------+";
         String header = String.format("| %-3s | %-25s | %-20s | %-28s | %-28s |",
                 "ID", "Tên khách hàng", "Số điện thoại", "Email", "Địa chỉ");
